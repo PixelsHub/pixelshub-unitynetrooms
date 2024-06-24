@@ -1,0 +1,19 @@
+{
+    "name": "PixelsHub.Netrooms.Unitynetcode",
+    "rootNamespace": "PixelsHub.Netrooms",
+    "references": [
+        "PixelsHub.UnityBasics",
+        "PixelsHub.Netrooms",
+        "Unity.Netcode.Runtime",
+        "Unity.Netcode.Components"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

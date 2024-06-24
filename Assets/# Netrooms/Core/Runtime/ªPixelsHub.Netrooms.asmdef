@@ -1,0 +1,20 @@
+{
+    "name": "PixelsHub.Netrooms",
+    "rootNamespace": "PixelsHub.Netrooms",
+    "references": [
+        "PixelsHub.UnityBasics",
+        "Unity.XR.Management",
+        "Unity.XR.Management.Editor",
+        "Unity.XR.OpenXR",
+        "Unity.Multiplayer.Playmode"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

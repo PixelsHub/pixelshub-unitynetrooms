@@ -1,0 +1,19 @@
+{
+    "name": "PixelsHub.Netrooms.Unitynetcode.XR",
+    "rootNamespace": "",
+    "references": [
+        "Unity.Netcode.Runtime",
+        "Unity.Netcode.Components",
+        "Unity.XR.Hands",
+        "PixelsHub.Netrooms.Unitynetcode"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
