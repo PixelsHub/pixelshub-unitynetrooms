@@ -6,6 +6,5 @@ namespace PixelsHub.Netrooms
     public class NetworkTransformOwnerAuthority : NetworkTransform
     {
         protected override bool OnIsServerAuthoritative() => false;
-
     }
 }

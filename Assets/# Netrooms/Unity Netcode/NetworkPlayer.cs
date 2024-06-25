@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections.Generic;
 
 namespace PixelsHub.Netrooms
 {
@@ -11,9 +12,13 @@ namespace PixelsHub.Netrooms
         public static event Action<NetworkPlayer> OnLocalPlayerObjectInstantiated;
         public static event Action<NetworkPlayer> OnLocalPlayerDespawned;
 
+        public static IReadOnlyDictionary<ulong, NetworkPlayer> Players => players;
+
         public GameObject LocalPlayerInstance { get; private set; }
 
         public PlayerDeviceCategory DeviceCategory => deviceCategory.Value;
+
+        private static readonly Dictionary<ulong, NetworkPlayer> players = new();
 
         private readonly NetworkVariable<PlayerDeviceCategory> deviceCategory = new
             (PlayerDeviceCategory.Unknown, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -37,6 +42,8 @@ namespace PixelsHub.Netrooms
 
         public override void OnNetworkSpawn()
         {
+            players.Add(OwnerClientId, this);
+
             if(IsLocalPlayer)
             {
                 OnLocalPlayerSpawned?.Invoke(this);
@@ -62,6 +69,8 @@ namespace PixelsHub.Netrooms
                 Destroy(LocalPlayerInstance);
                 LocalPlayerInstance = null;
             }
+
+            players.Remove(OwnerClientId);
         }
 
         private void InstantiateLocalPlayerPrefab()

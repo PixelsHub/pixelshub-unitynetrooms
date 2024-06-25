@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace PixelsHub.Netrooms
 {
-    public class LocalPlayerCamera : MonoBehaviour
+    public class LocalPlayerOrigin : MonoBehaviour
     {
-        public static LocalPlayerCamera Instance { get; private set; }
+        public static LocalPlayerOrigin Instance { get; private set; }
 
         public Transform Pivot => pivot;
 
@@ -18,12 +18,18 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private new Camera camera;
 
-        private void OnEnable()
+        private void Awake()
         {
+            if(Instance != null)
+            {
+                Destroy(Instance.gameObject);
+                Debug.LogWarning($"New LocalPlayerOrigin ({name}) has prompted destruction of existing object ({Instance.name}).");
+            }
+
             Instance = this;
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             if(Instance == this)
                 Instance = null;

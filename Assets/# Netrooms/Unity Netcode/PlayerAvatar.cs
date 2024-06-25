@@ -7,14 +7,14 @@ namespace PixelsHub.Netrooms
     [DisallowMultipleComponent]
     public class PlayerAvatar : NetworkBehaviour
     {
-        public NetworkPlayer NetworkPlayer { get; private set; }
+        private NetworkPlayer networkPlayer;
 
         [SerializeField]
-        private GameObject visualizationRoot;
+        private GameObject[] visualizationRoots;
 
         [Header("Head")]
         [SerializeField]
-        private NetworkTransform headRoot;
+        protected NetworkTransform headRoot;
 
         private Renderer[] headRenderers;
 
@@ -28,16 +28,14 @@ namespace PixelsHub.Netrooms
                 NetworkWorldOrigin.OnInstanceSet += SetAsChildOfOrigin;
             }
 
-            if(IsLocalPlayer)
+            if(NetworkPlayer.Players.TryGetValue(OwnerClientId, out networkPlayer))
             {
-                if(visualizationRoot.activeSelf)
-                    visualizationRoot.SetActive(false);
+                // TODO: Process player data
             }
             else
-            {
-                if(!visualizationRoot.activeSelf)
-                    visualizationRoot.SetActive(true);
-            }
+                Debug.LogError($"Could not find NetworkPlayer for avatar (OwnerClientId={OwnerClientId}).");
+
+            MakeVisible(!IsLocalPlayer);
         }
 
         public override void OnNetworkDespawn()
@@ -50,18 +48,24 @@ namespace PixelsHub.Netrooms
 
         protected virtual void Awake()
         {
-            NetworkPlayer = GetComponentInParent<NetworkPlayer>();
-            Debug.Assert(NetworkPlayer != null, "PlayerAvatar must be a child of a NetworkPlayer on Awake.");
-
             headRenderers = headRoot.GetComponentsInChildren<Renderer>();
         }
 
         protected virtual void LateUpdate()
         {
-            if(IsLocalPlayer && LocalPlayerCamera.Instance != null)
+            if(IsLocalPlayer && LocalPlayerOrigin.Instance != null)
             {
-                var t = LocalPlayerCamera.Instance.Camera.transform;
+                var t = LocalPlayerOrigin.Instance.Camera.transform;
                 headRoot.transform.SetPositionAndRotation(t.position, t.rotation);
+            }
+        }
+
+        protected virtual void MakeVisible(bool isVisible) 
+        {
+            foreach(var root in visualizationRoots)
+            {
+                if(root.activeSelf != isVisible)
+                    root.SetActive(isVisible);
             }
         }
 

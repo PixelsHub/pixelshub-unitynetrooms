@@ -5,6 +5,7 @@
         "Unity.Netcode.Runtime",
         "Unity.Netcode.Components",
         "Unity.XR.Hands",
+        "PixelsHub.Netrooms",
         "PixelsHub.Netrooms.Unitynetcode"
     ],
     "includePlatforms": [],
