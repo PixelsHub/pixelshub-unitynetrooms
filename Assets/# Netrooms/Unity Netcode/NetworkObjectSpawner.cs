@@ -5,7 +5,7 @@ using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
-    public class NetworkObjectSpawnBehaviour : MonoBehaviour
+    public class NetworkObjectSpawner : MonoBehaviour
     {
         [Serializable]
         private struct SpawnData

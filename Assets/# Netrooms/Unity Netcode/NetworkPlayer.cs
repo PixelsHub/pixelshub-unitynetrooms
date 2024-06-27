@@ -1,22 +1,18 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using System.Collections.Generic;
 
 namespace PixelsHub.Netrooms
 {
     [DisallowMultipleComponent]
     public class NetworkPlayer : NetworkBehaviour
     {
-        public static event Action<NetworkPlayer> OnLocalPlayerSpawned;
-        public static event Action<NetworkPlayer> OnLocalPlayerObjectInstantiated;
-        public static event Action<NetworkPlayer> OnLocalPlayerDespawned;
-
         public static IReadOnlyDictionary<ulong, NetworkPlayer> Players => players;
 
-        public GameObject LocalPlayerInstance { get; private set; }
-
         public PlayerDeviceCategory DeviceCategory => deviceCategory.Value;
+
+        public PlayerAvatar Avatar { get; private set; }
 
         private static readonly Dictionary<ulong, NetworkPlayer> players = new();
 
@@ -24,21 +20,10 @@ namespace PixelsHub.Netrooms
             (PlayerDeviceCategory.Unknown, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         [SerializeField]
-        private GameObject defaultLocalPlayerPrefab;
-
-#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
-        [SerializeField]
-        private GameObject immersiveLocalPlayerPrefab;
-#endif
-
-        [Space(8)]
-        [SerializeField]
         private PlayerAvatar defaultAvatarPrefab;
 
         [SerializeField]
         private PlayerAvatar immersiveAvatarPrefab;
-
-        private PlayerAvatar avatar;
 
         public override void OnNetworkSpawn()
         {
@@ -46,43 +31,18 @@ namespace PixelsHub.Netrooms
 
             if(IsLocalPlayer)
             {
-                OnLocalPlayerSpawned?.Invoke(this);
-
-                InstantiateLocalPlayerPrefab();
                 InitializeLocalPlayerVariables();
 
                 if(IsServer)
-                    SpawnPlayerAvatar(OwnerClientId);
+                    SpawnPlayerAvatar(OwnerClientId, deviceCategory.Value);
                 else
-                    SpawnPlayerAvatarServerRpc(OwnerClientId);
-
-                OnLocalPlayerObjectInstantiated?.Invoke(this);
+                    SpawnPlayerAvatarServerRpc(OwnerClientId, deviceCategory.Value);
             }
         }
 
         public override void OnNetworkDespawn()
         {
-            if(IsLocalPlayer)
-            {
-                OnLocalPlayerDespawned?.Invoke(this);
-
-                Destroy(LocalPlayerInstance);
-                LocalPlayerInstance = null;
-            }
-
             players.Remove(OwnerClientId);
-        }
-
-        private void InstantiateLocalPlayerPrefab()
-        {
-#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
-            if(XRImmersiveness.IsActive)
-                LocalPlayerInstance = Instantiate(immersiveLocalPlayerPrefab);
-            else
-                LocalPlayerInstance = Instantiate(defaultLocalPlayerPrefab);
-#else
-            localPlayerInstance = Instantiate(defaultLocalPlayerPrefab);
-#endif
         }
 
         private void InitializeLocalPlayerVariables() 
@@ -107,22 +67,22 @@ namespace PixelsHub.Netrooms
         }
 
         [Rpc(SendTo.Server)]
-        private void SpawnPlayerAvatarServerRpc(ulong ownerClientId) 
+        private void SpawnPlayerAvatarServerRpc(ulong ownerClientId, PlayerDeviceCategory deviceCategory) 
         {
-            SpawnPlayerAvatar(ownerClientId);
+            SpawnPlayerAvatar(ownerClientId, deviceCategory);
         }
 
-        private void SpawnPlayerAvatar(ulong ownerClientId) 
+        private void SpawnPlayerAvatar(ulong ownerClientId, PlayerDeviceCategory deviceCategory) 
         {
             PlayerAvatar targetPrefab;
 
-            if(deviceCategory.Value == PlayerDeviceCategory.ImmersiveXR)
+            if(deviceCategory == PlayerDeviceCategory.ImmersiveXR)
                 targetPrefab = immersiveAvatarPrefab;
             else
                 targetPrefab = defaultAvatarPrefab;
-            
-            avatar = Instantiate(targetPrefab, transform);
-            avatar.NetworkObject.SpawnAsPlayerObject(ownerClientId);
+
+            Avatar = Instantiate(targetPrefab, transform);
+            Avatar.NetworkObject.SpawnAsPlayerObject(ownerClientId);
         }
     }
 }

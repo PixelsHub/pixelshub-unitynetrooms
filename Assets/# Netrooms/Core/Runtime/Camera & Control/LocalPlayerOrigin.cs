@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+#pragma warning disable CS0108
 namespace PixelsHub.Netrooms
 {
     public class LocalPlayerOrigin : MonoBehaviour
@@ -16,7 +17,7 @@ namespace PixelsHub.Netrooms
         private Transform pivot;
 
         [SerializeField]
-        private new Camera camera;
+        private Camera camera;
 
         private void Awake()
         {
@@ -36,3 +37,4 @@ namespace PixelsHub.Netrooms
         }
     }
 }
+#pragma warning restore CS0108

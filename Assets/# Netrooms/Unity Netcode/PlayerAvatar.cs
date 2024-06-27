@@ -7,8 +7,6 @@ namespace PixelsHub.Netrooms
     [DisallowMultipleComponent]
     public class PlayerAvatar : NetworkBehaviour
     {
-        private NetworkPlayer networkPlayer;
-
         [SerializeField]
         private GameObject[] visualizationRoots;
 
@@ -27,13 +25,6 @@ namespace PixelsHub.Netrooms
                 
                 NetworkWorldOrigin.OnInstanceSet += SetAsChildOfOrigin;
             }
-
-            if(NetworkPlayer.Players.TryGetValue(OwnerClientId, out networkPlayer))
-            {
-                // TODO: Process player data
-            }
-            else
-                Debug.LogError($"Could not find NetworkPlayer for avatar (OwnerClientId={OwnerClientId}).");
 
             MakeVisible(!IsLocalPlayer);
         }

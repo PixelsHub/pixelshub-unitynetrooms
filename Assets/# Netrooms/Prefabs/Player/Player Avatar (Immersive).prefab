@@ -523,9 +523,12 @@ MonoBehaviour:
   visualizationRoots:
   - {fileID: 5780228652345027214}
   - {fileID: 2704283761941966042}
-  headRoot: {fileID: 3605477833161575547}
+  headRoot: {fileID: 8321505878196692805}
   avatarHandLeft: {fileID: 5324756971660577596}
   avatarHandRight: {fileID: 8917612890856282659}
+  wristPositionThreshold: 0.008
+  wristRotationAngleThreshold: 0.15
+  jointRotationAngleThreshold: 0.35
 --- !u!1 &2577467999147718315
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,40 +745,94 @@ MonoBehaviour:
   joints:
   - jointId: 3
     transform: {fileID: 2855036782299081865}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 4
     transform: {fileID: 209896839466805169}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 5
     transform: {fileID: 502822655702356635}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 7
     transform: {fileID: 3601755261585461246}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 8
     transform: {fileID: 2527046712565080645}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 9
     transform: {fileID: 6301123194685183522}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 10
     transform: {fileID: 1814669995290645802}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 12
     transform: {fileID: 2004098108119786429}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 13
     transform: {fileID: 6128629548766250672}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 14
     transform: {fileID: 4504389727848813796}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 15
     transform: {fileID: 5863555812852284035}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 17
     transform: {fileID: 8092449935042671782}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 18
     transform: {fileID: 5289450046850523695}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 19
     transform: {fileID: 7986736854303199203}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 20
     transform: {fileID: 7225292170890462000}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 22
     transform: {fileID: 6698160151289730372}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 23
     transform: {fileID: 2597374718742500563}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 24
     transform: {fileID: 9220405529567460652}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   jointHierarchyNamePrefix: R_
   fetchJointsFromHierarchy: 0
 --- !u!1 &3295621453797601940
@@ -883,7 +940,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3068103799798773298}
-  - component: {fileID: 3605477833161575547}
+  - component: {fileID: 8321505878196692805}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -907,7 +964,7 @@ Transform:
   - {fileID: 6592337438767525940}
   m_Father: {fileID: 528509247678264847}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3605477833161575547
+--- !u!114 &8321505878196692805
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -916,7 +973,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3871436345342793160}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Script: {fileID: 11500000, guid: aaf693bd7e6fb9e4d99d5729358e5f69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
@@ -930,7 +987,7 @@ MonoBehaviour:
   SyncScaleY: 0
   SyncScaleZ: 0
   PositionThreshold: 0.001
-  RotAngleThreshold: 0.1
+  RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
   UseQuaternionSynchronization: 1
   UseQuaternionCompression: 0
@@ -1719,40 +1776,94 @@ MonoBehaviour:
   joints:
   - jointId: 3
     transform: {fileID: 6632768765974958335}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 4
     transform: {fileID: 4648662333805380740}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 5
     transform: {fileID: 6378239416576536580}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 7
     transform: {fileID: 8591615841077349328}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 8
     transform: {fileID: 2755689157201245676}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 9
     transform: {fileID: 674531172901777685}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 10
     transform: {fileID: 8341773059664285010}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 12
     transform: {fileID: 2474052392575937014}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 13
     transform: {fileID: 2037886540553941860}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 14
     transform: {fileID: 4026230852902093163}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 15
     transform: {fileID: 6549200503743730886}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 17
     transform: {fileID: 8076944150079890110}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 18
     transform: {fileID: 1194582119836596517}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 19
     transform: {fileID: 7167309678087821047}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 20
     transform: {fileID: 4748950166635011238}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 22
     transform: {fileID: 3017604320717253680}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 23
     transform: {fileID: 7256634049020327474}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   - jointId: 24
     transform: {fileID: 6657190327411644172}
+    startRotation: {x: 0, y: 0, z: 0, w: 0}
+    endRotation: {x: 0, y: 0, z: 0, w: 0}
+    interpolationTimer: 0.15
   jointHierarchyNamePrefix: L_
   fetchJointsFromHierarchy: 0
 --- !u!1 &6531894810428725414

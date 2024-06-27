@@ -1,10 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Netcode;
-#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
 using UnityEngine.XR.Hands;
-#endif
+using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
@@ -22,6 +21,7 @@ namespace PixelsHub.Netrooms
             }
         }
 
+#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
         private struct UpdateHandParameters
         {
             public XRHand hand;
@@ -30,15 +30,20 @@ namespace PixelsHub.Netrooms
             public Dictionary<XRHandJointID, Quaternion> jointCache;
             public int jointIterationStartIndex;
             public int jointIterationEndIndex;
+            public Action<XRHandJointID, Quaternion> replicationAction;
         }
 
-#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
         private static XRHandSubsystem handSubsystem;
         private static bool isLocalPlayerUpdatingHands;
 #endif
 
         private const NetworkVariableReadPermission defaultReadPermission = NetworkVariableReadPermission.Everyone;
         private const NetworkVariableWritePermission defaultWritePremission = NetworkVariableWritePermission.Owner;
+
+        private readonly NetworkVariable<bool> isLeftHandTracked = new(false, defaultReadPermission, defaultWritePremission);
+        private readonly NetworkVariable<bool> isRightHandTracked = new(false, defaultReadPermission, defaultWritePremission);
+        private readonly NetworkVariable<HandWrist> leftHandWrist = new(default, defaultReadPermission, defaultWritePremission);
+        private readonly NetworkVariable<HandWrist> rightHandWrist = new(default, defaultReadPermission, defaultWritePremission);
 
         [Header("Hands")]
         [SerializeField]
@@ -47,6 +52,7 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private PlayerAvatarXRHand avatarHandRight;
 
+#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
         [SerializeField]
         private float wristPositionThreshold = 0.008f;
 
@@ -56,12 +62,6 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private float jointRotationAngleThreshold = 0.35f;
 
-        private readonly NetworkVariable<bool> isLeftHandTracked = new(false, defaultReadPermission, defaultWritePremission);
-        private readonly NetworkVariable<bool> isRightHandTracked = new(false, defaultReadPermission, defaultWritePremission);
-        private readonly NetworkVariable<HandWrist> leftHandWrist = new(default, defaultReadPermission, defaultWritePremission);
-        private readonly NetworkVariable<HandWrist> rightHandWrist = new(default, defaultReadPermission, defaultWritePremission);
-
-#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
         private Dictionary<XRHandJointID, Quaternion> lastLeftHandJointCache;
         private Dictionary<XRHandJointID, Quaternion> lastRightHandJointCache;
 #endif
@@ -96,8 +96,8 @@ namespace PixelsHub.Netrooms
 #endif
                 avatarHandLeft.SetHandActive(isLeftHandTracked.Value);
                 avatarHandRight.SetHandActive(isRightHandTracked.Value);
-                SetHandWrist(avatarHandLeft, leftHandWrist.Value);
-                SetHandWrist(avatarHandRight, rightHandWrist.Value);
+                SetHandWrist(avatarHandLeft, leftHandWrist.Value, false);
+                SetHandWrist(avatarHandRight, rightHandWrist.Value, false);
 
                 isLeftHandTracked.OnValueChanged += HandleLeftHandTrackedChanged;
                 isRightHandTracked.OnValueChanged += HandleRightHandTrackedChanged;
@@ -130,11 +130,15 @@ namespace PixelsHub.Netrooms
         private void HandleLeftHandTrackedChanged(bool previousValue, bool newValue)
         {
             avatarHandLeft.SetHandActive(newValue);
+            var wrist = leftHandWrist.Value;
+            avatarHandLeft.SetWristPose(wrist.wristPosition, wrist.wristRotation, false);
         }
 
         private void HandleRightHandTrackedChanged(bool previousValue, bool newValue)
         {
             avatarHandRight.SetHandActive(newValue);
+            var wrist = rightHandWrist.Value;
+            avatarHandRight.SetWristPose(wrist.wristPosition, wrist.wristRotation, false);
         }
 
         private void HandleLeftNetworkHandChanged(HandWrist previous, HandWrist newValue)
@@ -147,32 +151,33 @@ namespace PixelsHub.Netrooms
             SetHandWrist(avatarHandRight, newValue);
         }
 
-        private void SetHandWrist(PlayerAvatarXRHand avatarHand, HandWrist networkHand)
+        private void SetHandWrist(PlayerAvatarXRHand avatarHand, HandWrist networkHand, bool interpolate = true)
         {
-            avatarHand.SetWristPose(networkHand.wristPosition, networkHand.wristRotation);
+            avatarHand.SetWristPose(networkHand.wristPosition, networkHand.wristRotation, interpolate);
         }
 
         [Rpc(SendTo.NotMe)]
-        private void UpdateAvatarHandJointRpc(Handedness handedness, XRHandJointID jointId, Quaternion value)
+        private void ReplicateAvatarLeftHandJointRpc(XRHandJointID jointId, Quaternion value)
         {
-            if(handedness == Handedness.Left)
-                avatarHandLeft.ApplyJoint(jointId, value);
-            else if(handedness == Handedness.Right)
-                avatarHandRight.ApplyJoint(jointId, value);
-            else
-                Debug.Assert(false);
+            avatarHandLeft.ApplyJoint(jointId, value);
+        }
+
+        [Rpc(SendTo.NotMe)]
+        private void ReplicateAvatarRightHandJointRpc(XRHandJointID jointId, Quaternion value)
+        {
+            avatarHandRight.ApplyJoint(jointId, value);
         }
 
 #if UNITY_EDITOR || IMMERSIVE_XR_BUILD
         private IEnumerator UpdateLocalPlayerHandsCoroutine()
         {
             if(!IsLocalPlayer)
-                throw new System.InvalidOperationException();
+                throw new InvalidOperationException();
 
             // These values provide good results
             // Do NOT make serialized fields
             const int jointsPerBatch = 6;
-            const float jointBatchUpdateTime = 0.05f;
+            const float jointBatchUpdateTime = 1 / 30;
 
             int jointIterationStartIndex = 0;
             int jointIterationEndIndex = jointsPerBatch - 1;
@@ -206,7 +211,8 @@ namespace PixelsHub.Netrooms
                     handWrist = leftHandWrist,
                     jointCache = lastLeftHandJointCache,
                     jointIterationStartIndex = jointIterationStartIndex,
-                    jointIterationEndIndex = jointIterationEndIndex
+                    jointIterationEndIndex = jointIterationEndIndex,
+                    replicationAction = ReplicateAvatarLeftHandJointRpc
                 };
 
                 ReplicateLocalPlayerHand(p);
@@ -217,6 +223,7 @@ namespace PixelsHub.Netrooms
                 p.isHandTracked = isRightHandTracked;
                 p.handWrist = rightHandWrist;
                 p.jointCache = lastRightHandJointCache;
+                p.replicationAction = ReplicateAvatarRightHandJointRpc;
 
                 ReplicateLocalPlayerHand(p);
 
@@ -279,7 +286,7 @@ namespace PixelsHub.Netrooms
                         if(Quaternion.Angle(p.jointCache[joint.jointId], targetRotation) > jointRotationAngleThreshold)
                         {
                             p.jointCache[joint.jointId] = targetRotation;
-                            UpdateAvatarHandJointRpc(hand.handedness, joint.jointId, targetRotation);
+                            p.replicationAction.Invoke(joint.jointId, targetRotation);
                         }
                     }
                 }

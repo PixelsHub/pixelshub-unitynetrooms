@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7069328105798915260}
   - component: {fileID: 548921841311842191}
   - component: {fileID: 7392145621155741750}
+  - component: {fileID: 4476908171306316803}
   m_Layer: 0
   m_Name: Network World Origin
   m_TagString: Untagged
@@ -64,6 +65,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b75a3889026d84e458b540726783fab3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4476908171306316803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845813311959854949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0

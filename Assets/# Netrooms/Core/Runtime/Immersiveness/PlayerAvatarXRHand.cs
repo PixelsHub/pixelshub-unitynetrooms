@@ -70,14 +70,25 @@ namespace PixelsHub.Netrooms
                 rootObject.SetActive(isVisible);
         }
 
-        public void SetWristPose(Vector3 position, Quaternion rotation)
+        public void SetWristPose(Vector3 position, Quaternion rotation, bool interpolate = true)
         {
-            startWristPosition = wrist.localPosition;
-            startWristRotation = wrist.localRotation;
-            endWristPosition = position;
-            endWristRotation = rotation;
+            if(IsWristPoseBelowThreshold(position, rotation))
+                return;
 
-            wristInterpolationTimer = 0;
+            if(interpolate)
+            {
+                startWristPosition = wrist.localPosition;
+                startWristRotation = wrist.localRotation;
+                endWristPosition = position;
+                endWristRotation = rotation;
+
+                wristInterpolationTimer = 0;
+            }
+            else
+            {
+                wristInterpolationTimer = wristInterpolationTime;
+                wrist.SetLocalPositionAndRotation(position, rotation);
+            }
         }
 
         public void ApplyJoint(XRHandJointID id, Quaternion rotation) 
@@ -105,6 +116,12 @@ namespace PixelsHub.Netrooms
         {
             UpdateWristInterpolation();
             UpdateJointInterpolations();
+        }
+
+        private bool IsWristPoseBelowThreshold(Vector3 position, Quaternion rotation) 
+        {
+            return Vector3.Distance(position, wrist.position) < 0.002f 
+                && Quaternion.Angle(rotation, wrist.rotation) < 0.5f;
         }
 
         private void UpdateWristInterpolation() 

@@ -18,7 +18,7 @@ namespace PixelsHub.Netrooms
                 if(!isActive.HasValue)
                 {
                     isActive = IsImmersiveXRProviderActive();
-                    Debug.Assert(false);
+                    Debug.Assert(false, "Immersiveness should have been checked before any external access.");
                 }
 
                 return isActive.Value;
@@ -31,17 +31,26 @@ namespace PixelsHub.Netrooms
         private static void Initialize() 
         {
 #if UNITY_EDITOR
-            List<string> mppmTag = new(Unity.Multiplayer.Playmode.CurrentPlayer.ReadOnlyTags());
-            if(mppmTag.Contains("Immersive"))
+            string[] mppmTag = Unity.Multiplayer.Playmode.CurrentPlayer.ReadOnlyTags();
+            bool foundImmersivenessMppmTag = false;
+            foreach(string tag in mppmTag)
             {
-                isActive = true;
-                return;
+                if(tag == "Immersive")
+                {
+                    Debug.Log("Immersive XR forced active due to MultiplayerPlaymode tag.");
+                    isActive = true;
+                    foundImmersivenessMppmTag = true;
+                }
+                else if(tag == "NotImmersive")
+                {
+                    Debug.Log("Immersive XR forced inactive due to MultiplayerPlaymode tag.");
+                    isActive = false;
+                    foundImmersivenessMppmTag = true;
+                }
             }
-            else if(mppmTag.Contains("NotImmersive"))
-            {
-                isActive = false;
+
+            if(foundImmersivenessMppmTag)
                 return;
-            }
 #endif
 
             isActive = IsImmersiveXRProviderActive();
@@ -49,6 +58,16 @@ namespace PixelsHub.Netrooms
 
         private static bool IsImmersiveXRProviderActive()
         {
+#if !UNITY_EDITOR && !IMMERSIVE_XR_BUILD
+            return false;
+#endif
+
+            if(XRGeneralSettings.Instance == null)
+            {
+                Debug.LogError("XRGeneralSettings instance could not be found. This might be a race condition error.");
+                return false;
+            }
+
             var xrManagerSettings = XRGeneralSettings.Instance.Manager;
 
             if(xrManagerSettings == null)

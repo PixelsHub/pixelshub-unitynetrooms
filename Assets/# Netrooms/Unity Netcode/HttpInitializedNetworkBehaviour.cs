@@ -48,7 +48,7 @@ namespace PixelsHub.Netrooms
 
             using HttpClient httpClient = new();
 
-            string url = $"http://{NetworkUtilities.GetServerAddress()}:{httpServer.Port}/{HttpUrlPath}/";
+            string url = $"http://{NetworkUtilities.TransportConnectionAddress}:{httpServer.Port}/{HttpUrlPath}/";
             var response = await httpClient.GetAsync(url);
 
             if(response.IsSuccessStatusCode)
