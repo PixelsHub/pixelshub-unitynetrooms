@@ -31,30 +31,37 @@ namespace PixelsHub.Netrooms
         private static void Initialize() 
         {
 #if UNITY_EDITOR
+            if(TrySetImmersivenessByMpPmTags())
+                return;
+#endif
+
+            isActive = IsImmersiveXRProviderActive();
+        }
+
+#if UNITY_EDITOR
+        private static bool TrySetImmersivenessByMpPmTags() 
+        {
             string[] mppmTag = Unity.Multiplayer.Playmode.CurrentPlayer.ReadOnlyTags();
-            bool foundImmersivenessMppmTag = false;
+            bool anyTagFound = false;
             foreach(string tag in mppmTag)
             {
                 if(tag == "Immersive")
                 {
                     Debug.Log("Immersive XR forced active due to MultiplayerPlaymode tag.");
                     isActive = true;
-                    foundImmersivenessMppmTag = true;
+                    anyTagFound = true;
                 }
                 else if(tag == "NotImmersive")
                 {
                     Debug.Log("Immersive XR forced inactive due to MultiplayerPlaymode tag.");
                     isActive = false;
-                    foundImmersivenessMppmTag = true;
+                    anyTagFound = true;
                 }
             }
 
-            if(foundImmersivenessMppmTag)
-                return;
-#endif
-
-            isActive = IsImmersiveXRProviderActive();
+            return anyTagFound;
         }
+#endif
 
         private static bool IsImmersiveXRProviderActive()
         {
@@ -64,7 +71,7 @@ namespace PixelsHub.Netrooms
 
             if(XRGeneralSettings.Instance == null)
             {
-                Debug.LogError("XRGeneralSettings instance could not be found. This might be a race condition error.");
+                Debug.LogError("Immersiveness check failed due to null XRGeneralSettings. Check possible race condition errors.");
                 return false;
             }
 

@@ -1,19 +1,22 @@
 #if UNITY_EDITOR
 using UnityEngine;
 
-public class EditorOnlyInstantiate : MonoBehaviour
+namespace UnityEditor.PixelsHub
 {
-    [SerializeField]
-    private Transform targetParent;
-
-    [Space(8)]
-    [SerializeField]
-    private GameObject[] prefabs;
-
-    private void Start()
+    public class EditorOnlyInstantiate : MonoBehaviour
     {
-        foreach(var p in prefabs)
-            Instantiate(p, targetParent);
+        [SerializeField]
+        private Transform targetParent;
+
+        [Space(8)]
+        [SerializeField]
+        private GameObject[] prefabs;
+
+        private void Start()
+        {
+            foreach(var p in prefabs)
+                Instantiate(p, targetParent);
+        }
     }
 }
 #endif
