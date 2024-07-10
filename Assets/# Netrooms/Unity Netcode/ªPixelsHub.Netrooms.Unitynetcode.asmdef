@@ -5,7 +5,8 @@
         "PixelsHub.UnityBasics",
         "PixelsHub.Netrooms",
         "Unity.Netcode.Runtime",
-        "Unity.Netcode.Components"
+        "Unity.Netcode.Components",
+        "Unity.Collections"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

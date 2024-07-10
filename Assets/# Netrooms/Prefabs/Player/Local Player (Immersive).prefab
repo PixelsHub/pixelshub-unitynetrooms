@@ -162,6 +162,7 @@ MonoBehaviour:
   m_CameraTransform: {fileID: 3537079063281262443}
   m_RepositionOutOfViewKeyboardOnOpen: 1
   m_FacingKeyboardThreshold: 0.15
+  executeInEditor: 0
 --- !u!1001 &4037744508755832442
 PrefabInstance:
   m_ObjectHideFlags: 0

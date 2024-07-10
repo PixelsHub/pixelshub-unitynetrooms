@@ -9,6 +9,9 @@ using PixelsHub.Netrooms.Server;
 
 namespace PixelsHub.Netrooms
 {
+    /// <summary>
+    /// NetworkBehaviour with a http-based initial synchronization.
+    /// </summary>
     public abstract class HttpInitializedNetworkBehaviour : NetworkBehaviour
     {
         public abstract string HttpUrlPath { get; }

@@ -62,6 +62,7 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private float jointRotationAngleThreshold = 0.35f;
 
+        // Caches are used to detect changes in joint rotation with threshold comparison
         private Dictionary<XRHandJointID, Quaternion> lastLeftHandJointCache;
         private Dictionary<XRHandJointID, Quaternion> lastRightHandJointCache;
 #endif
@@ -175,7 +176,7 @@ namespace PixelsHub.Netrooms
                 throw new InvalidOperationException();
 
             // These values provide good results
-            // Do NOT make serialized fields
+            // Do NOT use serialized fields
             const int jointsPerBatch = 6;
             const float jointBatchUpdateTime = 1 / 30;
 
@@ -215,7 +216,7 @@ namespace PixelsHub.Netrooms
                     replicationAction = ReplicateAvatarLeftHandJointRpc
                 };
 
-                ReplicateLocalPlayerHand(p);
+                ReplicateLocalAvatarHand(p);
 
                 yield return null;
 
@@ -225,7 +226,7 @@ namespace PixelsHub.Netrooms
                 p.jointCache = lastRightHandJointCache;
                 p.replicationAction = ReplicateAvatarRightHandJointRpc;
 
-                ReplicateLocalPlayerHand(p);
+                ReplicateLocalAvatarHand(p);
 
                 jointBatchTimer += Time.unscaledDeltaTime;
 
@@ -253,7 +254,7 @@ namespace PixelsHub.Netrooms
             isLocalPlayerUpdatingHands = false;
         }
 
-        private void ReplicateLocalPlayerHand(UpdateHandParameters p) 
+        private void ReplicateLocalAvatarHand(UpdateHandParameters p) 
         {
             var hand = p.hand;
             var wrist = p.handWrist;
@@ -263,7 +264,7 @@ namespace PixelsHub.Netrooms
                 if(!p.isHandTracked.Value)
                     p.isHandTracked.Value = true;
 
-                if(LocalPlayerXRHandReference.hands.TryGetValue(hand.handedness, out var localHand))
+                if(LocalXRHandReference.hands.TryGetValue(hand.handedness, out var localHand))
                 {
                     var origin = NetworkWorldOrigin.Instance.transform;
 

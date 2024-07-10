@@ -4,7 +4,7 @@ namespace PixelsHub.Netrooms
 {
     public enum PlayerDeviceCategory
     {
-        Unknown,
+        Undefined,
         Desktop,
         Handheld,
         ImmersiveXR

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4844612787909290406}
   - component: {fileID: 610623356145878195}
+  - component: {fileID: 4271433142089524982}
   m_Layer: 0
   m_Name: Local Player (Default)
   m_TagString: Untagged
@@ -47,6 +48,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pivot: {fileID: 4844612787909290406}
   camera: {fileID: 36529659504959156}
+--- !u!114 &4271433142089524982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515073662985966040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 017c5e3933235514c9520e1dace2a4b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ActionAssets:
+  - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1 &1560530821352664393
 GameObject:
   m_ObjectHideFlags: 0

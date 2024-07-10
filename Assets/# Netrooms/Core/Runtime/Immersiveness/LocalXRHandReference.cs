@@ -10,11 +10,12 @@ namespace PixelsHub.Netrooms
     /// Provides transform references for XR Hands.
     /// <para>This class has been created due to the unreliability of XRHand subsystem joint poses.</para>
     /// </summary>
-    public class LocalPlayerXRHandReference : MonoBehaviour
+    public class LocalXRHandReference : MonoBehaviour
     {
-        public static readonly Dictionary<Handedness, LocalPlayerXRHandReference> hands = new(2);
+        public static readonly Dictionary<Handedness, LocalXRHandReference> hands = new(2);
 
         public Vector3 WristPosition => wrist.position;
+
         public Quaternion WristRotation => wrist.rotation;
 
         public AvatarJoint[] Joints => joints;
