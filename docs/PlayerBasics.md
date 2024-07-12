@@ -1,7 +1,7 @@
 [Return to main page](../)
 
 # Player Basics
-Players are considered the instance of a user on the running application. In the networking context, a player is spawned for a given user that joins the room.\
+Players are considered the instance of a user on the running application. In the networking context, a player is spawned for a given user that joins the room.
 
 ## Local Behaviours
 The local player prefab that oversees the local use of the application is instantiated from the start of the scene.\
