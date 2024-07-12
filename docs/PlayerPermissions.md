@@ -1,4 +1,4 @@
-[Return to main page](../tab=readme-ov-file#documentation)
+[Return to main page](https://github.com/PixelsHub/pixelshub-unitynetrooms/tree/main?tab=readme-ov-file#documentation)
 
 # Player Permissions
 Player Permissions allow to specify boolean checks against string codes in a modular way, each associated with usability capabilities.\
