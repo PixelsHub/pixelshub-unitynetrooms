@@ -1,4 +1,4 @@
-[Return to main page](../)
+[Return to main page](../tab=readme-ov-file#documentation)
 
 # Player Permissions
 Player Permissions allow to specify boolean checks against string codes in a modular way, each associated with usability capabilities.\
