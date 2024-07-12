@@ -1,4 +1,4 @@
-[Return to index](../)
+[Return to main page](../)
 
 # Player Permissions
 Player Permissions allow to specify boolean checks against string codes in a modular way, each associated with usability capabilities.\
