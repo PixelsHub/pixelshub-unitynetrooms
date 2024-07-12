@@ -4,11 +4,14 @@
 Players are considered the instance of a user on the running application. In the networking context, a player is spawned for a given user that joins the room.
 
 ## Local Behaviours
-The local player prefab that oversees the local use of the application is instantiated from the start of the scene.\
+The local player prefab that oversees the local use of the application must be instantiated from the start of the scene.\
+In Cross-Immersive applications, use the provided `CrossImmersiveLocalObjectLifespan` component to instantiate the target local player prefab.\
+\
 Examples of local functionality include:
 - Camera control behaviours
 - User movement and/or input control
 - Reference transforms for player avatar
+- UI/UX setup and management
 - Scene objects manipulation
 
 ## Networking (Unity Netcode)
