@@ -5,39 +5,71 @@ using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
-    public class NetworkPlayerSlots : NetworkBehaviour
+    public struct PlayerSlot : INetworkSerializable, IEquatable<PlayerSlot>
     {
-        private struct PlayerSlot : INetworkSerializable, IEquatable<PlayerSlot>
+        public ulong playerId;
+        public bool isConnected;
+
+        public PlayerSlot(ulong playerId, bool isConnected)
         {
-            public ulong ownerClientId;
-            public bool isConnected;
-
-            public PlayerSlot(ulong ownerClientId, bool isConnected)
-            {
-                this.ownerClientId = ownerClientId;
-                this.isConnected = isConnected;
-            }
-
-            public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-            {
-                serializer.SerializeValue(ref ownerClientId);
-                serializer.SerializeValue(ref isConnected);
-            }
-
-            public readonly bool Equals(PlayerSlot other)
-            {
-                return ownerClientId == other.ownerClientId
-                    && isConnected == other.isConnected;
-            }
+            this.playerId = playerId;
+            this.isConnected = isConnected;
         }
 
-        public static NetworkPlayerSlots Instance { get; private set; }
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref playerId);
+            serializer.SerializeValue(ref isConnected);
+        }
+
+        public readonly bool Equals(PlayerSlot o) => playerId == o.playerId && isConnected == o.isConnected;
+    }
+
+    public class NetworkPlayerSlots : NetworkRequiredInstance<NetworkPlayerSlots>
+    {
+        public const string limitReachedReason = "PLAYER_LIMIT_REACHED";
+
+        public const int maximumAmount = 24;
+
+        public int Count => playerSlots.Count;
+
+        public IEnumerator<PlayerSlot> PlayerSlots => playerSlots.GetEnumerator();
 
         private readonly NetworkList<PlayerSlot> playerSlots = new();
 
+        [SerializeField, Range(2, maximumAmount)]
+        private int availableSlots = 12;
+
+        public void SetAvailableSlots(int availableSlots)
+        {
+            if(!IsServer)
+            {
+                Debug.Assert(false);
+                return;
+            }
+
+            if(availableSlots == playerSlots.Count)
+                return;
+
+            if(availableSlots < 2)
+            {
+                this.availableSlots = 2;
+                Debug.LogError("Cannot set a slot count lower than 2");
+            }
+            else if(availableSlots > maximumAmount)
+            {
+                this.availableSlots = maximumAmount;
+                Debug.LogError($"Cannot set a slot count higher than {maximumAmount}");
+            }
+            else
+                this.availableSlots = availableSlots;
+
+            ProcessNewAvailableSlotAmount();
+        }
+
         public ulong GetPlayerId(int index)
         {
-            return playerSlots[index].ownerClientId;
+            return playerSlots[index].playerId;
         }
 
         public NetworkPlayer GetPlayer(int index)
@@ -47,7 +79,7 @@ namespace PixelsHub.Netrooms
             if(!slot.isConnected)
                 return null;
 
-            return NetworkPlayer.Players[slot.ownerClientId];
+            return NetworkPlayer.Players[slot.playerId];
         }
 
         public bool TryGetPlayer(int index, out NetworkPlayer player)
@@ -57,7 +89,7 @@ namespace PixelsHub.Netrooms
                 var slot = playerSlots[index];
 
                 if(slot.isConnected)
-                    return NetworkPlayer.Players.TryGetValue(slot.ownerClientId, out player);
+                    return NetworkPlayer.Players.TryGetValue(slot.playerId, out player);
             }
 
             player = null;
@@ -77,12 +109,12 @@ namespace PixelsHub.Netrooms
 
                 if(slot.isConnected)
                 {
-                    if(NetworkPlayer.Players.TryGetValue(slot.ownerClientId, out var player))
+                    if(NetworkPlayer.Players.TryGetValue(slot.playerId, out var player))
                         result.Add(player);
                     else
                     {
                         result.Add(null);
-                        Debug.LogError($"Missing player (Id={slot.ownerClientId})");
+                        Debug.LogError($"Missing player (Id={slot.playerId})");
                     }
                 }
                 else
@@ -94,78 +126,54 @@ namespace PixelsHub.Netrooms
 
         public override void OnNetworkSpawn()
         {
-            if(Instance == null)
+            Debug.Assert(Instance == this);
+
+            if(IsServer)
             {
-                Instance = this;
+                Debug.Assert(playerSlots.Count == 0);
 
-                if(IsServer)
-                {
-                    if(NetworkPlayer.Players.Count > 0)
-                        foreach(var player in NetworkPlayer.Players.Values)
-                            HandlePlayerSpawned(player);
-
-                    NetworkPlayer.OnPlayerSpawned += HandlePlayerSpawned;
-                    NetworkPlayer.OnPlayerDespawned += HandlePlayerDespawned;
-                }
+                for(int i = 0; i < maximumAmount; i++)
+                    playerSlots.Add(new());
             }
-            else
-                Debug.Assert(false, "Onle one instance of NetworkRoom is expected.");
         }
 
         public override void OnNetworkDespawn()
         {
-            if(Instance == this)
-            {
-                Instance = null;
+            Debug.Assert(Instance == this);
 
-                if(IsServer)
-                {
-                    playerSlots.Clear();
-
-                    NetworkPlayer.OnPlayerSpawned -= HandlePlayerSpawned;
-                    NetworkPlayer.OnPlayerDespawned -= HandlePlayerDespawned;
-                }
-            }
+            if(IsServer)
+                playerSlots.Clear();
         }
 
-        public void HandlePlayerSpawned(NetworkPlayer player)
+        public bool TryAssignPlayerSlot(NetworkPlayer player, out int slotIndex)
         {
             Debug.Assert(IsServer);
 
             PlayerSlot playerSlot = new(player.OwnerClientId, true);
 
-            if(!TrySetPlayerAtExistingEmptySlot(playerSlot, out int playerIndex))
+            if(!TrySetPlayerAtExistingEmptySlot(playerSlot, out slotIndex))
                 playerSlots.Add(playerSlot);
-            
-            player.AssignColor(PlayerColoringScheme.GetColor(playerIndex));
+
+            return true;
         }
 
-        public void HandlePlayerDespawned(NetworkPlayer player)
+        public void RemovePlayerFromSlot(NetworkPlayer player)
         {
             Debug.Assert(IsServer);
 
             for(int i = 0; i < playerSlots.Count; i++)
             {
-                if(playerSlots[i].ownerClientId == player.OwnerClientId)
+                if(playerSlots[i].playerId == player.OwnerClientId)
                 {
-                    playerSlots[i] = new(player.OwnerClientId, false);
+                    var slot = playerSlots[i];
+                    slot.isConnected = false;
+                    playerSlots[i] = slot;
                     return;
                 }
             }
 
-            Debug.LogError($"Despawned player (Id={player.OwnerClientId}) could not be found at any player slot.");
+            Debug.LogError($"Player (Id={player.OwnerClientId}) could not be found at any player slot for removal.");
         }
-
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void CheckComponentExistsOnScene() 
-        {
-            if(FindFirstObjectByType<NetworkManager>() != null && FindFirstObjectByType<NetworkPlayerSlots>() == null)
-            {
-                Debug.LogError("A Networking scene should include a NetworkPlayerSlots component.");
-            }
-        }
-#endif
 
         private bool TrySetPlayerAtExistingEmptySlot(PlayerSlot playerSlot, out int playerIndex)
         {
@@ -181,6 +189,58 @@ namespace PixelsHub.Netrooms
 
             playerIndex = playerSlots.Count;
             return false;
+        }
+
+        private void ProcessNewAvailableSlotAmount()
+        {
+            Debug.Assert(IsServer);
+
+            if(!IsSpawned)
+            {
+                Debug.Assert(playerSlots.Count == 0);
+                return;
+            }
+
+            if(availableSlots > playerSlots.Count)
+            {
+                while(playerSlots.Count < availableSlots)
+                    playerSlots.Add(new());
+            }
+            else
+            {
+                Queue<int> emptySlots = EnqueueEmptySlots();
+
+                // Remaining players fill empty slots or are kicked
+                while(playerSlots.Count > availableSlots)
+                {
+                    int i = availableSlots;
+
+                    if(playerSlots[i].isConnected)
+                    {
+                        if(emptySlots.Count > 0)
+                        {
+                            int newIndex = emptySlots.Dequeue();
+                            playerSlots[newIndex] = playerSlots[i];
+                        }
+                        else if(NetworkPlayer.Players.TryGetValue(playerSlots[i].playerId, out var player))
+                            player.Kick();
+                    }
+
+                    playerSlots.RemoveAt(i);
+                }
+            }
+        }
+
+        private Queue<int> EnqueueEmptySlots() 
+        {
+            Queue<int> emptySlots = new();
+            for(int i = 0; i < availableSlots; i++)
+            {
+                if(!playerSlots[i].isConnected)
+                    emptySlots.Enqueue(i);
+            }
+
+            return emptySlots;
         }
     }
 }

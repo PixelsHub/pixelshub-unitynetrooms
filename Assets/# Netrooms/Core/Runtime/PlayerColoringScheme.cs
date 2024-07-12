@@ -7,6 +7,8 @@ namespace PixelsHub.Netrooms
     {
         public static IReadOnlyList<Color> Colors => colors;
 
+        public static readonly Color undefinedColor = Color.white;
+
         private static List<Color> colors;
 
         private static readonly string[] defaultColors = new string[]
@@ -39,6 +41,9 @@ namespace PixelsHub.Netrooms
 
         public static Color GetColor(int index)
         {
+            if(index < 0)
+                return undefinedColor;
+
             if(index >= colors.Count)
             {
                 index = colors.Count - 1;

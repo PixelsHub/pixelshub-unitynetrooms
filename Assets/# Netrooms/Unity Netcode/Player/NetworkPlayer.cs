@@ -2,16 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Netcode;
 using Unity.Collections;
+using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
     [DisallowMultipleComponent]
     public class NetworkPlayer : NetworkBehaviour
     {
-        public static event Action<NetworkPlayer> OnPlayerSpawned;
-        public static event Action<NetworkPlayer> OnPlayerDespawned;
+        /// <summary>
+        /// Invoked for spawned players that have been validated by the server.
+        /// </summary>
+        public static event Action<NetworkPlayer> OnSpawnedPlayerValidated;
+
+        /// <summary>
+        /// Invoked for players that have been validated by the server and have despawned.
+        /// </summary>
+        public static event Action<NetworkPlayer> OnValidatedPlayerDespawned;
+
         public static event Action<NetworkPlayer, string> OnPlayerKicked;
 
         public event Action<Color> OnColorChanged;
@@ -20,44 +28,37 @@ namespace PixelsHub.Netrooms
 
         public static IReadOnlyDictionary<ulong, NetworkPlayer> Players => players;
 
-        public string UserIdentifier => userIdentifier.Value.ToString();
+        /// <summary>
+        /// The current index of this player in the PlayerSlots. Expected -1 if unassigned.
+        /// </summary>
+        public int SlotIndex => slotIndex.Value;
+
+        public FixedString512Bytes UserIdentifier => userIdentifier.Value;
         
         public PlayerDeviceCategory DeviceCategory => deviceCategory.Value;
 
-        public Color Color => color.Value;
+        public Color Color => PlayerColoringScheme.GetColor(colorIndex.Value);
 
         public PlayerAvatar Avatar { get; private set; }
 
         private static readonly Dictionary<ulong, NetworkPlayer> players = new();
 
-        private readonly NetworkVariable<bool> validated = new();
+        private readonly NetworkVariable<bool> validated = new(false);
 
-        private readonly NetworkVariable<FixedString512Bytes> userIdentifier = new
-            (string.Empty, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<int> slotIndex = new(-1);
 
-        private readonly NetworkVariable<PlayerDeviceCategory> deviceCategory = new
-            (PlayerDeviceCategory.Undefined, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<FixedString512Bytes> userIdentifier = new(string.Empty);
 
-        private readonly NetworkVariable<Color> color = new
-            (Color.white, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        private readonly NetworkVariable<PlayerDeviceCategory> deviceCategory = new(PlayerDeviceCategory.Undefined);
+
+        private readonly NetworkVariable<int> colorIndex = new
+            (-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         [SerializeField]
         private PlayerAvatar defaultAvatarPrefab;
 
         [SerializeField]
         private PlayerAvatar immersiveAvatarPrefab;
-
-        public void AssignColor(Color color)
-        {
-            if(!IsServer)
-            {
-                Debug.Assert(false, "Assigning colors is only permitted from the server.");
-                return;
-            }
-
-            this.color.Value = color;
-            OnColorChanged?.Invoke(color);
-        }
 
         public void Kick(string reason = null) 
         {
@@ -73,19 +74,15 @@ namespace PixelsHub.Netrooms
                 return;
             }
 
-            StartCoroutine(KickCoroutine());
+            NetworkManager.Singleton.StartCoroutine(KickCoroutine());
 
             IEnumerator KickCoroutine()
             {
                 NotifyKickedPlayerRpc(reason);
-
                 yield return null;
-
                 NetworkObject.Despawn(true);
-
                 yield return null;
-
-                NetworkManager.Singleton.DisconnectClient(OwnerClientId);
+                NetworkManager.Singleton.DisconnectClient(OwnerClientId, reason);
             }
         }
 
@@ -93,23 +90,24 @@ namespace PixelsHub.Netrooms
         {
             if(IsLocalPlayer)
             {
-                Debug.Log($"Spawning local player as user \"{User.LocalIdentifier}\".");
+                Debug.Log($"Spawning local player as user \"{LocalPlayerUserIdentifier.Value}\".");
 
-                userIdentifier.Value = User.LocalIdentifier;
-                deviceCategory.Value = GetLocalPlayerDeviceCategory();
+                Local = this;
 
-                if(IsServer) // Hosts do not need player validation
+                if(IsServer) // Hosts do not need connection requirements validation
                 {
-                    validated.Value = true;
-                    InitializeValidatedPlayerRpc();
+                    userIdentifier.Value = LocalPlayerUserIdentifier.Value;
+                    deviceCategory.Value = GetLocalPlayerDeviceCategory();
+
+                    StartCoroutine(FinalizeServerValidationCoroutine());
                 }
                 else
-                    ServerValidatePlayerConnectionRpc();
+                    ValidateSpawnedLocalPlayerServerRpc(LocalPlayerUserIdentifier.Value, GetLocalPlayerDeviceCategory());
             }
             else
             {
                 if(validated.Value) // Initialize alreay validated players
-                    InitializePlayer();
+                    InitializeValidatedPlayer();
             }
         }
 
@@ -118,62 +116,80 @@ namespace PixelsHub.Netrooms
             if(IsLocalPlayer)
                 Local = null;
 
-            if(!IsServer)
-            {
-                color.OnValueChanged -= HandleColorChanged;
-            }
+            colorIndex.OnValueChanged -= HandleColorIndexChanged;
 
             if(players.Remove(OwnerClientId))
-                OnPlayerDespawned?.Invoke(this);
+            {
+                if(IsServer)
+                    NetworkPlayerSlots.Instance.RemovePlayerFromSlot(this);
+                
+                OnValidatedPlayerDespawned?.Invoke(this);
+            }
         }
 
         [Rpc(SendTo.Server)]
-        private void ServerValidatePlayerConnectionRpc() 
+        private void ValidateSpawnedLocalPlayerServerRpc(string userIdentifier, PlayerDeviceCategory deviceCategory)
         {
+            this.userIdentifier.Value = userIdentifier;
+            this.deviceCategory.Value = deviceCategory;
+
             if(PlayerConnectionRequirement.IsPlayerAllowedToConnect(this, out string failureReason))
-            {
-                validated.Value = true;
-                InitializeValidatedPlayerRpc();
-            }
+                StartCoroutine(FinalizeServerValidationCoroutine());
             else
                 Kick(failureReason);
         }
 
-        [Rpc(SendTo.Everyone)]
-        private void InitializeValidatedPlayerRpc() 
+        private IEnumerator FinalizeServerValidationCoroutine() 
         {
-            if(!IsSpawned)
-                return;
+            Debug.Assert(IsServer);
 
-            InitializePlayer();
+            while(NetworkPlayerSlots.Instance == null)
+                yield return null;
+
+            if(IsSpawned) // Ensure player has not been despawned during the wait
+            {
+                if(NetworkPlayerSlots.Instance.TryAssignPlayerSlot(this, out int index))
+                {
+                    slotIndex.Value = index;
+                    colorIndex.Value = FindAvailableColor(index);
+
+                    validated.Value = true;
+                    InitializeValidatedPlayer();
+                    InitializeValidatedPlayerClientsRpc();
+                }
+                else
+                    Kick(NetworkPlayerSlots.limitReachedReason);
+            }
+        }
+
+        [Rpc(SendTo.NotServer)]
+        private void InitializeValidatedPlayerClientsRpc() 
+        {
+            if(IsSpawned)
+                InitializeValidatedPlayer();
         }
         
-        private void InitializePlayer()
+        private void InitializeValidatedPlayer()
         {
             players.Add(OwnerClientId, this);
 
             if(IsLocalPlayer)
             {
-                Local = this;
-
                 if(IsServer)
                     SpawnPlayerAvatar(OwnerClientId, deviceCategory.Value);
                 else
                     SpawnPlayerAvatarServerRpc(OwnerClientId, deviceCategory.Value);
             }
 
-            if(!IsServer)
-            {
-                color.OnValueChanged += HandleColorChanged;
-            }
+            colorIndex.OnValueChanged += HandleColorIndexChanged;
 
-            OnPlayerSpawned?.Invoke(this);
+            OnSpawnedPlayerValidated?.Invoke(this);
         }
 
         [Rpc(SendTo.ClientsAndHost)]
         private void NotifyKickedPlayerRpc(string reason)
         {
-            Debug.Log($"{(IsLocalPlayer ? "Local " : string.Empty)}Player has been kicked (Id={OwnerClientId})");
+            Debug.Log($"{(IsLocalPlayer ? "Local " : string.Empty)}Player has been kicked (Id={OwnerClientId}) - {reason}");
             OnPlayerKicked?.Invoke(this, reason);
         }
 
@@ -196,9 +212,9 @@ namespace PixelsHub.Netrooms
             Avatar.NetworkObject.SpawnAsPlayerObject(ownerClientId);
         }
 
-        private void HandleColorChanged(Color prevColor, Color newColor)
+        private void HandleColorIndexChanged(int prevColorIndex, int newColorIndex)
         {
-            OnColorChanged?.Invoke(newColor);
+            OnColorChanged?.Invoke(Color);
         }
 
         private PlayerDeviceCategory GetLocalPlayerDeviceCategory()
@@ -218,6 +234,30 @@ namespace PixelsHub.Netrooms
             }
 
             return PlayerDeviceCategory.Undefined;
+        }
+
+        private int FindAvailableColor(int desirableIndex)
+        {
+            foreach(var player in players.Values)
+            {
+                // Desirable index is already used
+                if(player.colorIndex.Value == desirableIndex)
+                {
+                    // Iterate and find first available color
+                    return GetAvailableColorRecursive(0);
+
+                    static int GetAvailableColorRecursive(int index)
+                    {
+                        foreach(var player in players.Values)
+                            if(player.colorIndex.Value == index)
+                                return GetAvailableColorRecursive(++index);
+
+                        return index;
+                    }
+                }
+            }
+
+            return desirableIndex;
         }
     }
 }
