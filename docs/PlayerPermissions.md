@@ -46,8 +46,10 @@ Permissions can be checked in the code for players through the static methods:
 PlayerPermission.Check(permissionCode, playerValue);
 PlayerPermission.CheckLocalPlayer(permisionCode);
 ```
-An additional boolean `passCheckIfCodeNotFound` (default = false) can be used to determine if the permission should pass the check if the code is not found.\
-A local component `LocalPlayerPermissionEvent` is also already provided, which will invoke UnityEvents based on the resulting check of its indicated permission code. 
+Both methods provide an additional boolean `passCheckIfCodeNotFound` (default = false) can be used to determine if the permission should pass the check if the code is not found.\
+
+> [!NOTE]
+> A local component `LocalPlayerPermissionEvent` is also already provided, which will invoke UnityEvents based on the resulting check of its indicated permission code. 
 
 ## Player Value
 To allow for multiple use cases of permission capabilities, the method in which players are checked against permissions is left to decide by each implementation.\
