@@ -1,4 +1,5 @@
 # About
 
 ## Documentation
-- [Player Permissions](docs/PlayerPermissions.md)
+### Player
+[Player Permissions](docs/PlayerPermissions.md)
