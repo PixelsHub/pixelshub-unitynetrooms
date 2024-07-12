@@ -66,7 +66,7 @@ When checking against a permission, the player value should be provided, and thu
 ## Networking (Unity Netcode)
 A persistent singleton NetworkBehaviour `NetworkPlayerPermissions` is in charge of providing networking requirements to Player Permissions.\
 The server replicates PlayerPermission data to all clients through an Rpc method that sends a serialized json string containing the permission dictionary.\
-> [!WARNING]
+> [!NOTE]
 > Permission changes can be requested from a client using the method `SetPermissionsServerRpc(string newPermissionsJson)`, which will trigger the static Action `NetworkPlayerPermissions.OnClientPermissionSetRequested` for implementations to handle.  
 
 ## Setup
