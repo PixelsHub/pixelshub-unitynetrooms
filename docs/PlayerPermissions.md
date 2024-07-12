@@ -1,4 +1,4 @@
-[Return to index](../README.md)
+[Return to index](../)
 
 # Player Permissions
 Player Permissions allow to specify boolean checks against string codes in a modular way, each associated with usability capabilities.\
