@@ -8,8 +8,8 @@ Player Permissions can be accessed statically through the `PlayerPermissions` cl
 
 ## Structure
 Existing permissions are a static register dictionary `Dictionary<string, List<string>>` that associates each permission's code with a list of player values. Players not contained in the list for a given code are thus not given permission.\
-\
 A json serialization of the latest permissions `PlayerPermissions.RegisterJson` is automatically kept cached.\
+\
 The permission register can be read with readonly objects to allow external representation and fallback editing through the static method `PlayerPermissions.GenerateReadonlyList()`, which will return a `ReadonlyPlayerPermissionList`.\
 \
 Example permissions json:
