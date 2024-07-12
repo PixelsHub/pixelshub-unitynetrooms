@@ -28,11 +28,6 @@ namespace PixelsHub.Netrooms
 
         public static IReadOnlyDictionary<ulong, NetworkPlayer> Players => players;
 
-        /// <summary>
-        /// The current index of this player in the PlayerSlots. Expected -1 if unassigned.
-        /// </summary>
-        public int SlotIndex => slotIndex.Value;
-
         public FixedString512Bytes UserIdentifier => userIdentifier.Value;
         
         public PlayerDeviceCategory DeviceCategory => deviceCategory.Value;
@@ -44,8 +39,6 @@ namespace PixelsHub.Netrooms
         private static readonly Dictionary<ulong, NetworkPlayer> players = new();
 
         private readonly NetworkVariable<bool> validated = new(false);
-
-        private readonly NetworkVariable<int> slotIndex = new(-1);
 
         private readonly NetworkVariable<FixedString512Bytes> userIdentifier = new(string.Empty);
 
@@ -150,7 +143,6 @@ namespace PixelsHub.Netrooms
             {
                 if(NetworkPlayerSlots.Instance.TryAssignPlayerSlot(this, out int index))
                 {
-                    slotIndex.Value = index;
                     colorIndex.Value = FindAvailableColor(index);
 
                     validated.Value = true;

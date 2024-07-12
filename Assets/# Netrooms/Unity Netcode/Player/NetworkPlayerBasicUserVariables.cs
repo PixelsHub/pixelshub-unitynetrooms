@@ -9,10 +9,42 @@ namespace PixelsHub.Netrooms
     {
         public static NetworkPlayerBasicUserVariables Local { get; private set; }
 
+        public static string LocalDisplayName 
+        {
+            get => localDisplayName;
+            set
+            {
+                value ??= string.Empty;
+
+                localDisplayName = value;
+
+                if(Local != null)
+                    Local.displayName.Value = value;
+            }
+        }
+
+        public static string LocalRole
+        {
+            get => localRole;
+            set
+            {
+                value ??= string.Empty;
+
+                localRole = value;
+
+                if(Local != null)
+                    Local.role.Value = value;
+            }
+        }
+
+
         private static readonly string noRoleValue = "NO_ROLE";
 
-        protected readonly NetworkVariable<FixedString128Bytes> displayName = new(string.Empty);
-        protected readonly NetworkVariable<FixedString128Bytes> role = new(string.Empty);
+        private static string localDisplayName = string.Empty;
+        private static string localRole = noRoleValue;
+
+        protected readonly NetworkVariable<FixedString128Bytes> displayName = new(string.Empty, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        protected readonly NetworkVariable<FixedString128Bytes> role = new(noRoleValue, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         [SerializeField]
         private StringEvent onDisplayNameSet;
@@ -20,46 +52,23 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private StringEvent onRoleSet;
 
-        public void SetDisplayName(string value) => SetStringValue(value, displayName, onDisplayNameSet, SetDisplayNameServerRpc);
-
-        public void SetRole(string value) => SetStringValue(value, role, onRoleSet, SetRoleServerRpc);
-        
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+
+            displayName.OnValueChanged += HandleDisplayValueChanged;
+            role.OnValueChanged += HandleRoleChanged;
 
             if(IsLocalPlayer)
             {
                 Local = this;
 
-                if(displayName.Value == string.Empty)
-                {
-                    if(IsServer)
-                    {
-                        displayName.Value = LocalPlayerUserIdentifier.Value;
-                        onDisplayNameSet.Invoke(LocalPlayerUserIdentifier.Value);
-                    }
-                    else
-                        SetDisplayNameServerRpc(LocalPlayerUserIdentifier.Value);
-                }
-
-                if(role.Value == string.Empty)
-                {
-                    if(IsServer)
-                    {
-                        role.Value = noRoleValue;
-                        onRoleSet.Invoke(noRoleValue);
-                    }
-                    else
-                        SetRoleServerRpc(noRoleValue);
-                }
+                displayName.Value = localDisplayName;
+                role.Value = localRole;
             }
             else
             {
-                displayName.OnValueChanged += HandleDisplayValueChanged;
                 onDisplayNameSet.Invoke(displayName.Value.ToString());
-
-                role.OnValueChanged += HandleRoleChanged;
                 onRoleSet.Invoke(role.Value.ToString());
             }
         }
@@ -70,26 +79,9 @@ namespace PixelsHub.Netrooms
             {
                 Local = null;
             }
-            else
-            {
-                displayName.OnValueChanged -= HandleDisplayValueChanged;
-                role.OnValueChanged -= HandleRoleChanged;
-                onRoleSet.Invoke(role.Value.ToString());
-            }
-        }
 
-        [Rpc(SendTo.Server)]
-        private void SetDisplayNameServerRpc(FixedString128Bytes value)
-        {
-            displayName.Value = value;
-            onDisplayNameSet.Invoke(value.ToString());
-        }
-
-        [Rpc(SendTo.Server)]
-        private void SetRoleServerRpc(FixedString128Bytes value)
-        {
-            role.Value = value;
-            onRoleSet.Invoke(value.ToString());
+            displayName.OnValueChanged -= HandleDisplayValueChanged;
+            role.OnValueChanged -= HandleRoleChanged;
         }
 
         private void HandleDisplayValueChanged(FixedString128Bytes prevValue, FixedString128Bytes newValue)
@@ -100,31 +92,6 @@ namespace PixelsHub.Netrooms
         private void HandleRoleChanged(FixedString128Bytes prevValue, FixedString128Bytes newValue)
         {
             onRoleSet.Invoke(newValue.ToString());
-        }
-
-        private void SetStringValue(string value, NetworkVariable<FixedString128Bytes> networkVariable, StringEvent stringEvent, Action<FixedString128Bytes> setValueRpc)
-        {
-            if(!IsServer && !IsLocalPlayer)
-            {
-                Debug.LogError($"{GetType()} cannot modify a non-local player.");
-                return;
-            }
-
-            value = value.Trim();
-
-            if(string.IsNullOrEmpty(value))
-            {
-                Debug.Assert(false);
-                return;
-            }
-
-            if(IsServer)
-            {
-                networkVariable.Value = value;
-                stringEvent.Invoke(value);
-            }
-            else
-                setValueRpc.Invoke(value);
         }
     }
 }

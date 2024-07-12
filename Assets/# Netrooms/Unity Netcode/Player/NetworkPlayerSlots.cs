@@ -82,6 +82,23 @@ namespace PixelsHub.Netrooms
             return NetworkPlayer.Players[slot.playerId];
         }
 
+        /// <summary>
+        /// Returns the index of the given player. Will return -1 if player not found.
+        /// </summary>
+        public int GetPlayerIndex(NetworkPlayer player) => GetPlayerIndex(player.OwnerClientId);
+
+        /// <summary>
+        /// Returns the index of the given player. Will return -1 if player not found.
+        /// </summary>
+        public int GetPlayerIndex(ulong playerId)
+        {
+            for(int i = 0; i < playerSlots.Count; i++)
+                if(playerSlots[i].isConnected && playerSlots[i].playerId == playerId)
+                    return i;
+
+            return -1;
+        }
+
         public bool TryGetPlayer(int index, out NetworkPlayer player)
         {
             if(index >= 0 && index < playerSlots.Count - 1)
@@ -97,7 +114,7 @@ namespace PixelsHub.Netrooms
         }
 
         /// <summary>
-        /// Get a list with players in the slots. Players who have disconnected will appear as null.
+        /// Get a list with players in the slots. Empty slots will appear as null.
         /// </summary>
         public List<NetworkPlayer> GetPlayers()
         {

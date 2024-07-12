@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Unity.Netcode;
 
@@ -5,6 +6,14 @@ namespace PixelsHub.Netrooms
 {
     public class NetworkPlayerPermissions : NetworkPersistentSingleton<NetworkPlayerPermissions>
     {
+        public static event Action<ulong, string> OnClientPermissionSetRequested;
+
+        [Rpc(SendTo.Server)]
+        public void SetPermissionsServerRpc(string newPermissionsJson, RpcParams rpcParams = default) 
+        {
+            OnClientPermissionSetRequested?.Invoke(rpcParams.Receive.SenderClientId, newPermissionsJson);
+        }
+
         public override void OnNetworkSpawn()
         {
             if(IsServer)

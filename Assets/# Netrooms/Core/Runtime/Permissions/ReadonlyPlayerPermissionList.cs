@@ -6,7 +6,7 @@ namespace PixelsHub.Netrooms
     {
         public readonly IReadOnlyList<ReadonlyPlayerPermission> list;
 
-        public ReadonlyPlayerPermissionList(PlayerPermissions.Register register)
+        public ReadonlyPlayerPermissionList(Dictionary<string, List<string>> register)
         {
             var list = new List<ReadonlyPlayerPermission>(register.Count);
 
@@ -16,7 +16,6 @@ namespace PixelsHub.Netrooms
             this.list = list;
         }
 
-        public static implicit operator ReadonlyPlayerPermissionList(PlayerPermissions.Register r) => new(r);
+        public static implicit operator ReadonlyPlayerPermissionList(Dictionary<string, List<string>> r) => new(r);
     }
-
 }
