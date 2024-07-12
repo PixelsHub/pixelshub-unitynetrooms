@@ -1,3 +1,5 @@
+[Return to index](https://github.com/PixelsHub/pixelshub-unitynetrooms)
+
 # Player Permissions
 Player Permissions allow to specify boolean checks against string codes in a modular way, each associated with usability capabilities.\
 An example of a permission code would be `CAN_MANIPULATE_OBJECTS`, against which any given player would need to check at the necessary UX flow.\
