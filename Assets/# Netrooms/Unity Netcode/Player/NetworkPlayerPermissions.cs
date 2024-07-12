@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
-    public class NetworkPlayerPermissions : NetworkRequiredInstance<NetworkPlayerPermissions>
+    public class NetworkPlayerPermissions : NetworkPersistentSingleton<NetworkPlayerPermissions>
     {
         public override void OnNetworkSpawn()
         {

@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
-    public class NetworkRequiredInstance<T> : NetworkBehaviour where T : NetworkRequiredInstance<T>
+    public abstract class NetworkPersistentSingleton<T> : NetworkBehaviour where T : NetworkPersistentSingleton<T>
     {
         public static T Instance { get; private set; }
 
@@ -13,6 +13,8 @@ namespace PixelsHub.Netrooms
         
             if(Instance == this)
                 Instance = null;
+
+            Debug.Assert(NetworkObject.DontDestroyWithOwner);
         }
 
         private void Awake()
@@ -25,16 +27,5 @@ namespace PixelsHub.Netrooms
                 Destroy(this);
             }
         }
-
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EditorCheckComponentExistsOnScene()
-        {
-            if(FindFirstObjectByType<NetworkManager>() != null && FindFirstObjectByType<T>() == null)
-            {
-                Debug.LogError($"A Networking scene should include a {typeof(T)} component.");
-            }
-        }
-#endif
     }
 }
