@@ -33,4 +33,4 @@ Components are provided specifically to help setup the player's avatars for Imme
 
 ## Utilities
 - The component `XRImmersivenessActiveStateEvents` invokes either of two UnityEvents based on current Immersiveness status upon component enabling.
-- The editor component `BuildImmersivenessSymbolDefinition` incorporates preprocess build analysis of XR build settings and will write or delete the preprocessor directive `IMMERSIVE_XR_BUILD` automatically, providing a dialog to the user with the result of the edit to ensure notifying before building.
+- The editor script `BuildImmersivenessSymbolDefinition` incorporates automatic preprocess build analysis of XR build settings and will write or delete the preprocessor directive `IMMERSIVE_XR_BUILD` automatically, providing a dialog to the user with the result of the edit to ensure notifying before building.
