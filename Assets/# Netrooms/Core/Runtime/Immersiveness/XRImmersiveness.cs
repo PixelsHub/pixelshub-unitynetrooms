@@ -9,7 +9,7 @@ using UnityEditor.XR.Management;
 
 namespace PixelsHub.Netrooms
 {
-    public class XRImmersiveness
+    public static class XRImmersiveness
     {
         public static bool IsActive 
         {
@@ -90,6 +90,12 @@ namespace PixelsHub.Netrooms
 #endif
 
 #if UNITY_EDITOR // On Editor check for specific platform configurations since XRManagerSettings will be Standalone
+#if UNITY_STANDALONE
+            if(IsXRProviderActive<OpenXRLoaderBase>(BuildTargetGroup.Standalone))
+            {
+                Debug.Log($"Detected Immersive XR for Standalone (OpenXR).");
+                return true;
+            }
 #if UNITY_ANDROID
             if(IsXRProviderActive<OpenXRLoaderBase>(BuildTargetGroup.Android))
             {
