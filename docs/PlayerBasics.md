@@ -50,3 +50,17 @@ A connection requirement class `PlayerInvitationRequirement` is already provided
 > [!NOTE]
 > Custom connection requirement classes should also contemplate if and how to kick connected players if their internal data for validation criteria changes.
 > For example, `PlayerInvitationRequirement` will kick any connected players if they are no longer contained in their *invited players* collection when changed.
+
+## Local Player User Identifier
+Players are expected to be uniquely identified through a string (fixed 512 bytes) that is synchronized across each `NetworkPlayer` as the network variable `player.userIdentifier`.\
+This variable is automatically set by the local client when spawned based on the value of the internal static class `LocalPlayerUserIdentifier`.\
+This value must be set before a network connection on the local client, each implementation determining its behaviour based on functionality requirements, such as:
+- Automatically after a successful user login before user connects
+- UX-driven naming before user connects
+
+## Player association of components and data
+Players can be associated additional data and behaviours through external composition relying on network ownership and the `OwnerClientId` variable, which can be used to obtain the correct player via the `NetworkPlayer.Players` dictionary.\
+\
+For components that require being added and configured in prefabs, the abstract class `NetworkPlayerComponent` is provided. Derived classes should be added as a behaviour associated with a **NetworkObject** that will be owned by the player, such as the player prefab itself or the player avatar.\
+> [!TIP]
+> The class `NetworkPlayerBasicUserVariables` provides an example of a player associated component that will synchronize **display name** and **role** strings for the player, expecting its addtion as part of the avatar to show their texts above the player head. 
