@@ -45,6 +45,8 @@ List<NetworkPlayer> orderedPlayers = NetworkPlayerSlots.Instance.GetPlayers(); /
 ## Player Validation
 Spawned players need to be validated in the server before being initialized. Players that fail validation will be kicked immediately.\
 To perform validation, each player is checked against any **enabled** instances of `PlayerConnectionRequirement` derived classes. Implementations should create these classes to determine how access is granted to players.\
-A requirement class `PlayerInvitationRequirement` is already provided, which, when enabled on scene, will only allow acess to players whose identifier is contained in a list of invited players.
+\
+A connection requirement class `PlayerInvitationRequirement` is already provided, which, when enabled on scene, will only allow acess to players whose identifier is contained in a list of invited players.
 > [!NOTE]
 > Custom connection requirement classes should also contemplate if and how to kick connected players if their internal data for validation criteria changes.
+> For example, `PlayerInvitationRequirement` will kick any connected players if they are no longer contained in their *invited players* collection when changed.
