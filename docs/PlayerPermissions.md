@@ -72,7 +72,7 @@ The server replicates PlayerPermission data to all clients through an Rpc method
 ## Setup
 1. The NetworkBehaviour `NetworkPlayerPermissions` should be placed on the desired scene.
 2. Implementation must determine how to obtain the player value from a player, such as a static method that takes a NetworkPlayer and returns its identifier, or its role.
-3. Custom code should set the string `PlayerPermissions.LocalPlayerValue` when the local player spawns.
+3. Custom code should set the string `PlayerPermissions.LocalPlayerValue` when the local player spawns or before.
 4. Initialization of permissions on the server should be performed, ideally through the reading of a json that establishes the desired permissions.
 5. *If required*, custom permission utility behaviours can be created, imitating the existing `LocalPlayerPermissionEvent`.
 6. *If required*, UI editors should be created for runtime modification, using `PlayerPermissions.GenerateReadonlyList()` to display current permissions, and later save editing on the server.
