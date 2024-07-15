@@ -67,7 +67,7 @@ When checking against a permission, the player value should be provided, and thu
 A persistent singleton NetworkBehaviour `NetworkPlayerPermissions` is in charge of providing networking requirements to Player Permissions.\
 The server replicates PlayerPermission data to all clients through an Rpc method that sends a serialized json string containing the permission dictionary.
 > [!NOTE]
-> Permission changes can be requested from a client using the method `SetPermissionsServerRpc(string newPermissionsJson)`, which will trigger the static Action `NetworkPlayerPermissions.OnClientPermissionSetRequested` for implementations to handle.  
+> Permission changes can be requested from a client using the method `SetPermissionsServerRpc(string newPermissionsJson)`, which will trigger the static Action `NetworkPlayerPermissions.OnClientPermissionSetRequested` for implementations to handle how the server shall respond to these requests.  
 
 ## Setup
 1. The NetworkBehaviour `NetworkPlayerPermissions` should be placed on the desired scene.
