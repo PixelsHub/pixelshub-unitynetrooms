@@ -37,7 +37,7 @@ PlayerPermissions.SetPermissions(newPermissions);
 string permissionsJson = ...
 PlayerPermissions.ParsePermissions(permissionsJson);
 ```
-> [!WARNING]
+> [!CAUTION]
 > Only the server should modify the Player Permissions. Connected clients must never access any of these two methods unless originally called from the server for synchronization purposes.
 
 ## Permission Check
