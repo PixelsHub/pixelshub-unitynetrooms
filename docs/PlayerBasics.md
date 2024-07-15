@@ -32,7 +32,7 @@ These slots provide a way of distributing players in an indexed collection that 
 \
 Players can therefore be accessed via index and viceversa:
 ```C#
-NetworkPlayer player2 = NetworkPlayerSlots.Instance.GetPlayer(2);
+NetworkPlayer myPlayer = NetworkPlayerSlots.Instance.GetPlayer(2);
 
 int index = NetworkPlayerSlots.Instance.GetPlayerIndex(NetworkPlayer.Local);
 
