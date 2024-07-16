@@ -24,7 +24,7 @@ namespace PixelsHub.Netrooms
         {
             if(invitedPlayers == null || invitedPlayers.Length < 2)
             {
-                Debug.LogError("Cannot set less than 2 Participants.");
+                Debug.LogError("Cannot set less than 2 invited players.");
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace PixelsHub.Netrooms
         {
             if(Instance != null)
             {
-                Debug.LogError($"Only a single {GetType()} is permitted. Disabling in \"{name}\"...");
+                Debug.LogError($"Only a single {GetType()} is permitted. Disabling new in \"{name}\"...");
                 enabled = false;
                 return;
             }

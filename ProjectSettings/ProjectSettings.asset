@@ -165,7 +165,7 @@ PlayerSettings:
   androidMinAspectRatio: 1
   applicationIdentifier:
     Android: com.PixelsHub.pixelshubnetrooms
-    Standalone: com.PixelsHub.Netrooms
+    Standalone: com.PixelsHub.pixelshub-netrooms
     iPhone: com.Unity-Technologies.com.unity.template.urp-blank
   buildNumber:
     Standalone: 0
