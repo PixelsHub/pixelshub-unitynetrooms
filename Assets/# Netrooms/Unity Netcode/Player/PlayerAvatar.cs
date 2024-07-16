@@ -61,9 +61,9 @@ namespace PixelsHub.Netrooms
 
         protected virtual void LateUpdate()
         {
-            if(IsLocalPlayer && LocalPlayerOrigin.Instance != null)
+            if(IsLocalPlayer && LocalPlayerRig.Instance != null)
             {
-                var t = LocalPlayerOrigin.Instance.Camera.transform;
+                var t = LocalPlayerRig.Instance.Camera.transform;
                 headRoot.transform.SetPositionAndRotation(t.position, t.rotation);
             }
         }

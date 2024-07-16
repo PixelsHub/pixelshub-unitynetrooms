@@ -13,12 +13,12 @@ namespace PixelsHub.Netrooms
         
             if(Instance == this)
                 Instance = null;
-
-            Debug.Assert(NetworkObject.DontDestroyWithOwner);
         }
 
         private void Awake()
         {
+            Debug.Assert(NetworkObject.DontDestroyWithOwner);
+
             if(Instance == null)
                 Instance = this as T;
             else

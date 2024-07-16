@@ -37,9 +37,9 @@ namespace PixelsHub.Netrooms
 
         private void LateUpdate()
         {
-            if(IsLocalPlayer && LocalPlayerOrigin.Instance != null)
+            if(IsLocalPlayer && LocalPlayerRig.Instance != null)
             {
-                var t = LocalPlayerOrigin.Instance.Camera.transform;
+                var t = LocalPlayerRig.Instance.Camera.transform;
                 transform.SetPositionAndRotation(t.position, t.rotation);
             }
         }

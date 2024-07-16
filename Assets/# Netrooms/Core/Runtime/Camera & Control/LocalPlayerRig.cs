@@ -5,9 +5,9 @@ using UnityEngine;
 #pragma warning disable CS0108
 namespace PixelsHub.Netrooms
 {
-    public class LocalPlayerOrigin : MonoBehaviour
+    public class LocalPlayerRig : MonoBehaviour
     {
-        public static LocalPlayerOrigin Instance { get; private set; }
+        public static LocalPlayerRig Instance { get; private set; }
 
         public Transform Pivot => pivot;
 
@@ -24,7 +24,7 @@ namespace PixelsHub.Netrooms
             if(Instance != null)
             {
                 Destroy(Instance.gameObject);
-                Debug.LogWarning($"New LocalPlayerOrigin ({name}) has prompted destruction of existing object ({Instance.name}).");
+                Debug.LogWarning($"New {GetType()} ({name}) has prompted destruction of existing object ({Instance.name}).");
             }
 
             Instance = this;

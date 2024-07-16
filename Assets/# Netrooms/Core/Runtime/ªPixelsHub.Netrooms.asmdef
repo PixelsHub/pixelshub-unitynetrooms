@@ -3,6 +3,7 @@
     "rootNamespace": "PixelsHub.Netrooms",
     "references": [
         "PixelsHub.UnityBasics",
+        "Unity.InputSystem",
         "Unity.XR.Management",
         "Unity.XR.Management.Editor",
         "Unity.XR.Hands",

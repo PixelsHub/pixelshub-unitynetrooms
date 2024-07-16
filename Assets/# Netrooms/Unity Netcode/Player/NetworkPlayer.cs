@@ -136,7 +136,7 @@ namespace PixelsHub.Netrooms
         {
             Debug.Assert(IsServer);
 
-            while(NetworkPlayerSlots.Instance == null)
+            while(NetworkPlayerSlots.Instance == null || !NetworkPlayerSlots.Instance.IsSpawned)
                 yield return null;
 
             if(IsSpawned) // Ensure player has not been despawned during the wait

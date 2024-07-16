@@ -96,6 +96,7 @@ namespace PixelsHub.Netrooms
                 Debug.Log($"Detected Immersive XR for Standalone (OpenXR).");
                 return true;
             }
+#endif
 #if UNITY_ANDROID
             if(IsXRProviderActive<OpenXRLoaderBase>(BuildTargetGroup.Android))
             {
