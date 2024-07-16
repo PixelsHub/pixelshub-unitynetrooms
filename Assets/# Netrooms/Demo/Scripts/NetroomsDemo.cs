@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Collections;
 using PixelsHub.Netrooms;
 
 public class NetroomsDemo : MonoBehaviour
@@ -30,7 +31,7 @@ public class NetroomsDemo : MonoBehaviour
 
         NetworkEvents.OnEventInvoked += (ev) => 
         {
-            Debug.Log($"{ev.id} - {ev.player} - {ev.parameters[0]} - {ev.parameters[1]}");
+            Debug.Log($"{ev.parameters[0]} - {ev.parameters[1]}");
         };
     }
 
@@ -40,7 +41,8 @@ public class NetroomsDemo : MonoBehaviour
         {
             testEvent = false;
 
-            NetworkEvents.Instance.Add("EXAMPLE", NetworkPlayer.Local.OwnerClientId, new string[] { "hey", "hou" });
+            ulong player = NetworkPlayer.Local != null ? NetworkPlayer.Local.OwnerClientId : 0;
+            NetworkEvents.Add("EXAMPLE", player, new string[] { "hey", "hou" });
         }
     }
 }

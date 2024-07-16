@@ -390,6 +390,7 @@ GameObject:
   - component: {fileID: 714713974}
   - component: {fileID: 714713976}
   - component: {fileID: 714713977}
+  - component: {fileID: 714713978}
   m_Layer: 0
   m_Name: Persistent Network Behaviours
   m_TagString: Untagged
@@ -456,6 +457,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a33819835de1ad443a9a008f0ad8bbda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &714713978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714713973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6136ecc7a64409d48a87aaa6e2788361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &729690970

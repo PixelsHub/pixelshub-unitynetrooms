@@ -43,16 +43,24 @@ namespace PixelsHub.Netrooms
 
         public static void ParsePermissions(string permissionsJson)
         {
-            try
+            if(string.IsNullOrEmpty(permissionsJson))
             {
-                register = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(permissionsJson);
-                registerJson = permissionsJson;
-                OnPermissionsChanged?.Invoke();
+                register = new();
             }
-            catch(Exception ex)
+            else
             {
-                Debug.LogException(ex);
+                try
+                {
+                    register = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(permissionsJson);
+                }
+                catch(Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
             }
+
+            registerJson = permissionsJson;
+            OnPermissionsChanged?.Invoke();
         }
 
         public static void SetPermissions(Dictionary<string, List<string>> permissions)

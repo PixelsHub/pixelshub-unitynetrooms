@@ -4,30 +4,21 @@ using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
-    public struct NetworkEvent : INetworkSerializable
+    public struct NetworkEvent
     {
+        public const char separator = ';';
+
+        public readonly bool IsPlayerEvent => player > 0;
+
         public string id;
-        public bool isPlayerEvent;
         public ulong player;
         public string[] parameters;
 
-        public NetworkEvent(string id, bool isPlayerEvent, ulong player, string[] parameters)
+        public NetworkEvent(string id, ulong player, string[] parameters)
         {
             this.id = id;
-            this.isPlayerEvent = isPlayerEvent;
             this.player = player;
             this.parameters = parameters;
-        }
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref id);
-            serializer.SerializeValue(ref isPlayerEvent);
-            serializer.SerializeValue(ref player);
-
-            if(parameters != null)
-                for(int i = 0; i < parameters.Length; i++)
-                    serializer.SerializeValue(ref parameters[i]);
         }
     }
 
@@ -35,42 +26,43 @@ namespace PixelsHub.Netrooms
     {
         public static event Action<NetworkEvent> OnEventInvoked;
 
-        public void Add(string id, ulong player, string[] parameters, bool notifySelf = false) 
+        public static void Add(string id, ulong player, string[] parameters, bool notifySelf = false) 
         {
-            Add(new NetworkEvent(id, true, player, parameters), notifySelf);
+            Add(new NetworkEvent(id, player, parameters), notifySelf);
         }
 
-        public void Add(string id, string[] parameters, bool notifySelf = false)
+        public static void Add(string id, string[] parameters, bool notifySelf = false)
         {
-            Add(new NetworkEvent(id, false, 0, parameters), notifySelf);
+            Add(new NetworkEvent(id, 0, parameters), notifySelf);
         }
 
-        public void Add(string id, ulong player, bool notifySelf = false)
+        public static void Add(string id, ulong player, bool notifySelf = false)
         {
-            Add(new NetworkEvent(id, true, player, null), notifySelf);
+            Add(new NetworkEvent(id, player, null), notifySelf);
         }
 
-        public void Add(string id, bool notifySelf = false)
+        public static void Add(string id, bool notifySelf = false)
         {
-            Add(new NetworkEvent(id, false, 0, null), notifySelf);
+            Add(new NetworkEvent(id, 0, null), notifySelf);
         }
 
-        public void Add(NetworkEvent networkEvent, bool notifySelf = false)
+        public static void Add(NetworkEvent ev, bool notifySelf = false)
         {
-            ReplicateEventRpc(networkEvent);
+            string parameters = string.Join(NetworkEvent.separator, ev.parameters);
+            Instance.ReplicateEventRpc(ev.id, ev.player, parameters);
 
             if(notifySelf)
-                OnEventInvoked?.Invoke(networkEvent);
+                OnEventInvoked?.Invoke(ev);
         }
 
         [Rpc(SendTo.NotMe)]
-        protected virtual void ReplicateEventRpc(NetworkEvent networkEvent)
+        protected virtual void ReplicateEventRpc(string id, ulong player, string parameters)
         {
-            OnEventInvoked?.Invoke(networkEvent);
+            OnEventInvoked?.Invoke(new(id, player, parameters.Split(';')));
         }
 
 #if UNITY_EDITOR
-        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EditorCheckComponentExistsOnScene()
         {
             if(FindFirstObjectByType<NetworkManager>() != null && FindFirstObjectByType<NetworkEvents>() == null)
