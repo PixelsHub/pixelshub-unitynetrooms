@@ -47,7 +47,7 @@ List<NetworkPlayer> orderedPlayers = NetworkPlayerSlots.Instance.GetPlayers(); /
 ```
 > [!NOTE]
 > Any player that attempts to connect when there are no available slots (the maximum supported amount has been reached) will be kicked immediately by the server.\
-> Reducing the available slots will kick any excess players, if any. 
+> Reducing the available slots will kick excess players, if any. 
 
 ## Player Validation
 Spawned players need to be validated in the server before being initialized. Players that fail validation will be kicked immediately.\
