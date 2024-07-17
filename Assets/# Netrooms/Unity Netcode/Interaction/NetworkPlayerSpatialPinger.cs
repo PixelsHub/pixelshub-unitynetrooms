@@ -9,9 +9,12 @@ namespace PixelsHub.Netrooms
         [Serializable]
         public class Pool : GameObjectPool<PlayerSpatialPing> 
         {
+            [HideInInspector]
+            public NetworkPlayerSpatialPinger owner;
+
             protected override void InitializeInstantiatedObject(PlayerSpatialPing obj)
             {
-                obj.Initialize(this);
+                obj.OnPlayEnded += Pool;
             }
         }
 
@@ -42,6 +45,9 @@ namespace PixelsHub.Netrooms
         [Rpc(SendTo.ClientsAndHost)]
         private void CreatePingRpc(Vector3 localPosition, Vector3 localEuler, ulong playerId) 
         {
+            if(!IsSpawned)
+                return;
+
             var ping = pool.Get(transform);
 
             bool playerFound = NetworkPlayer.Players.TryGetValue(playerId, out var player);

@@ -45,6 +45,9 @@ namespace PixelsHub.Netrooms
         private readonly NetworkVariable<HandWrist> leftHandWrist = new(default, defaultReadPermission, defaultWritePremission);
         private readonly NetworkVariable<HandWrist> rightHandWrist = new(default, defaultReadPermission, defaultWritePremission);
 
+        // Inverted from local world origin scale
+        private readonly NetworkVariable<Vector3> worldOriginCompensatoryScale = new(Vector3.one, defaultReadPermission, defaultWritePremission);
+
         [Header("Hands")]
         [SerializeField]
         private PlayerAvatarXRHand avatarHandLeft;
@@ -104,6 +107,8 @@ namespace PixelsHub.Netrooms
                 isRightHandTracked.OnValueChanged += HandleRightHandTrackedChanged;
                 leftHandWrist.OnValueChanged += HandleLeftNetworkHandChanged;
                 rightHandWrist.OnValueChanged += HandleRightNetworkHandChanged;
+
+                worldOriginCompensatoryScale.OnValueChanged += HandleWorldOriginCompensatoryScaleChanged;
             }
         }
         
@@ -117,6 +122,8 @@ namespace PixelsHub.Netrooms
                 isRightHandTracked.OnValueChanged = null;
                 leftHandWrist.OnValueChanged = null;
                 rightHandWrist.OnValueChanged = null;
+
+                worldOriginCompensatoryScale.OnValueChanged = null;
             }
         }
 
@@ -136,16 +143,15 @@ namespace PixelsHub.Netrooms
             avatarHandRight.SetColor(color);
         }
 
-        protected override void LocalProcessWorldOriginScaleChanged(Vector3 scale)
+        protected override void LocalSetWorldOriginCompensatoryScale(Vector3 scale)
         {
-            SetAvatarHandMaterialScaleRpc(scale);
+            worldOriginCompensatoryScale.Value = scale;
         }
 
-        [Rpc(SendTo.ClientsAndHost)]
-        private void SetAvatarHandMaterialScaleRpc(Vector3 scale) 
+        private void HandleWorldOriginCompensatoryScaleChanged(Vector3 prev, Vector3 newScale) 
         {
-            avatarHandLeft.SetMaterialScale(scale);
-            avatarHandRight.SetMaterialScale(scale);
+            avatarHandLeft.SetMaterialScale(newScale);
+            avatarHandRight.SetMaterialScale(newScale);
         }
 
         private void HandleLeftHandTrackedChanged(bool previousValue, bool newValue)

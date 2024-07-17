@@ -6,36 +6,82 @@ namespace PixelsHub.Netrooms
 {
     public class PlayerSpatialPing : MonoBehaviour
     {
-        private NetworkPlayerSpatialPinger.Pool pool;
-
-        [SerializeField]
-        private ColorEvent onColorAssigned;
-
-        public void Initialize(NetworkPlayerSpatialPinger.Pool pool)
+        [Serializable]
+        private class ColorHandler
         {
-            this.pool = pool;   
+            public float alpha = 1;
+            public ColorEvent colorEvent;
         }
+
+        public event Action<PlayerSpatialPing> OnPlayEnded;
+
+        public bool IsPlaying { get; private set; }
+
+        [SerializeField, Tooltip("Set <= 0 if play end will be notified externally.")]
+        private float forcedDuration = -1;
+
+        [Space(8)]
+        [SerializeField]
+        private ColorHandler[] colorHandlers;
 
         public void Play(Vector3 worldPosition, Quaternion worldRotation, NetworkPlayer player) 
         {
+            IsPlaying = true;
+
             transform.SetPositionAndRotation(worldPosition, worldRotation);
 
             if(player != null)
             {
-                onColorAssigned.Invoke(player.Color);
+                AssignColor(player.Color);
             }
             else
             {
-                onColorAssigned.Invoke(PlayerColoringScheme.undefinedColor);
+                AssignColor(PlayerColoringScheme.undefinedColor);
             }
+
+            if(forcedDuration > 0)
+                StartCoroutine(DurationControlUpdate());
         }
 
-        /// <summary>
-        /// Expected to be called from animator event.
-        /// </summary>
-        public void NotifyPlayEnd()
+        public void EndPlay()
         {
-            pool.Pool(this);
+            if(!IsPlaying)
+                return;
+
+            IsPlaying = false;
+            OnPlayEnded?.Invoke(this);
+        }
+
+        private void OnDisable()
+        {
+            if(IsPlaying)
+                EndPlay();
+        }
+
+        private void OnDestroy()
+        {
+            OnPlayEnded = null;
+        }
+
+        private IEnumerator DurationControlUpdate() 
+        {
+            yield return new WaitForSecondsRealtime(forcedDuration);
+            EndPlay();
+        }
+
+        private void AssignColor(Color color)
+        {
+            if(colorHandlers == null)
+            {
+                Debug.LogWarning($"{GetType()} in object {name} does not have any color handler set.");
+                return;
+            }
+
+            foreach(var colorHandler in colorHandlers)
+            {
+                color.a = colorHandler.alpha;
+                colorHandler.colorEvent.Invoke(color);
+            }
         }
     }
 }
