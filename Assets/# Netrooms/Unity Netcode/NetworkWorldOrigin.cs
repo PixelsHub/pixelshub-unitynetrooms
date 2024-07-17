@@ -1,31 +1,31 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
-    public class NetworkWorldOrigin : NetworkBehaviour
+    public class NetworkWorldOrigin : NetworkPersistenSingletonRequired<NetworkWorldOrigin>
     {
-        public static event Action<NetworkWorldOrigin> OnInstanceSet;
-
-        public static NetworkWorldOrigin Instance { get; private set; }
+        public static event Action OnScaleChanged;
 
         public static Transform Transform => Instance.transform;
 
-        public override void OnNetworkSpawn()
+        private const float scaleChangeThreshold = 0.01f;
+
+        private Vector3 lastScale;
+
+        private void Update()
         {
-            Instance = this;
-            OnInstanceSet?.Invoke(this);
+            Vector3 scale = transform.localScale;
+            if(ScaleAxisChanged(scale.x, lastScale.x) || ScaleAxisChanged(scale.y, lastScale.y) || ScaleAxisChanged(scale.z, lastScale.z))
+            {
+                lastScale = scale;
+                OnScaleChanged?.Invoke();
+            }
         }
 
-        public override void OnNetworkDespawn()
+        private static bool ScaleAxisChanged(float a, float b) 
         {
-            if(Instance == this)
-            {
-                Instance = null;
-                OnInstanceSet?.Invoke(null);
-            }
+            return Mathf.Abs(a - b) > scaleChangeThreshold;
         }
     }
 }

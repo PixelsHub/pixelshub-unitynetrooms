@@ -38,6 +38,11 @@ namespace PixelsHub.Netrooms
                 NetworkWorldOrigin.OnInstanceSet += SetAsChildOfOrigin;
             }
 
+            if(IsLocalPlayer)
+            {
+                NetworkWorldOrigin.OnScaleChanged += LocalProcessWorldOriginScaleChanged;
+            }
+
             MakeVisible(!IsLocalPlayer);
         }
 
@@ -51,6 +56,11 @@ namespace PixelsHub.Netrooms
             if(IsServer)
             {
                 NetworkWorldOrigin.OnInstanceSet -= SetAsChildOfOrigin;
+            }
+
+            if(IsLocalPlayer)
+            {
+                NetworkWorldOrigin.OnScaleChanged -= LocalProcessWorldOriginScaleChanged;
             }
         }
 
@@ -72,6 +82,12 @@ namespace PixelsHub.Netrooms
         {
             foreach(var root in visualizationRoots)
             {
+                if(root == null)
+                {
+                    Debug.Assert(false);
+                    continue;
+                }
+
                 if(root.activeSelf != isVisible)
                     root.SetActive(isVisible);
             }
@@ -84,6 +100,17 @@ namespace PixelsHub.Netrooms
 
             transform.SetParent(origin.transform);
         }
+
+        protected void LocalProcessWorldOriginScaleChanged()
+        {
+            var originScale = NetworkWorldOrigin.Transform.localScale;
+            Vector3 s = new(1 / originScale.x, 1 / originScale.y, 1 / originScale.z);
+            headRoot.transform.localScale = s;
+
+            LocalProcessWorldOriginScaleChanged(s);
+        }
+
+        protected virtual void LocalProcessWorldOriginScaleChanged(Vector3 scale) { }
 
         protected virtual void ApplyPlayerColor(Color color)
         {

@@ -18,7 +18,7 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private Pool pool;
 
-        public void Ping(Vector3 position, Quaternion rotation)
+        public void Ping(Vector3 worldPosition, Quaternion worldRotation)
         {
             if(!IsSpawned)
             {
@@ -34,20 +34,26 @@ namespace PixelsHub.Netrooms
                 return;
             }
 
-            CreatePingRpc(position, rotation.eulerAngles, NetworkPlayer.Local.OwnerClientId);
+            var localPosition = NetworkWorldOrigin.Transform.InverseTransformPoint(worldPosition);
+            var localRotation = Quaternion.Inverse(NetworkWorldOrigin.Transform.rotation) * worldRotation;
+            CreatePingRpc(localPosition, localRotation.eulerAngles, NetworkPlayer.Local.OwnerClientId);
         }
 
         [Rpc(SendTo.ClientsAndHost)]
-        private void CreatePingRpc(Vector3 position, Vector3 euler, ulong playerId) 
+        private void CreatePingRpc(Vector3 localPosition, Vector3 localEuler, ulong playerId) 
         {
-            var ping = pool.Get(NetworkWorldOrigin.Transform);
+            var ping = pool.Get(transform);
 
             bool playerFound = NetworkPlayer.Players.TryGetValue(playerId, out var player);
 
             if(!playerFound)
                 Debug.LogError($"Could not find player (id={playerId}) for spatial ping.");
 
-            ping.Play(position, Quaternion.Euler(euler), player);
+            var origin = NetworkWorldOrigin.Transform; // Relative to world origin
+            var worldPosition = origin.TransformPoint(localPosition);
+            var worldRotation = origin.rotation * Quaternion.Euler(localEuler);
+
+            ping.Play(worldPosition, worldRotation, player);
         }
     }
 }

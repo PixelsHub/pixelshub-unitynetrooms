@@ -6,6 +6,9 @@ namespace PixelsHub.Netrooms
 {
     public class NetworkPlayerPermissions : NetworkPersistentSingleton<NetworkPlayerPermissions>
     {
+        /// <summary>
+        /// Called on the server when a client has requested a change in permissions.
+        /// </summary>
         public static event Action<ulong, string> OnClientPermissionSetRequested;
 
         [Rpc(SendTo.Server)]

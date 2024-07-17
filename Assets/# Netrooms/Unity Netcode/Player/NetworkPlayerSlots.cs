@@ -25,7 +25,7 @@ namespace PixelsHub.Netrooms
         public readonly bool Equals(PlayerSlot o) => playerId == o.playerId && isConnected == o.isConnected;
     }
 
-    public class NetworkPlayerSlots : NetworkPersistentSingleton<NetworkPlayerSlots>
+    public class NetworkPlayerSlots : NetworkPersistenSingletonRequired<NetworkPlayerSlots>
     {
         public const string limitReachedReason = "PLAYER_LIMIT_REACHED";
 
@@ -259,17 +259,5 @@ namespace PixelsHub.Netrooms
 
             return emptySlots;
         }
-
-
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EditorCheckComponentExistsOnScene()
-        {
-            if(FindFirstObjectByType<NetworkManager>() != null && FindFirstObjectByType<NetworkPlayerSlots>() == null)
-            {
-                Debug.LogError($"A Networking scene should include a {typeof(NetworkPlayerSlots)} component.");
-            }
-        }
-#endif
     }
 }

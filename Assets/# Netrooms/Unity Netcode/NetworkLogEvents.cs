@@ -4,7 +4,7 @@ using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
-    public class NetworkLogEvents : NetworkPersistentSingleton<NetworkLogEvents>
+    public class NetworkLogEvents : NetworkPersistenSingletonRequired<NetworkLogEvents>
     {
         public static event Action<LogEvent> OnEventInvoked;
 
@@ -42,16 +42,5 @@ namespace PixelsHub.Netrooms
         {
             OnEventInvoked?.Invoke(new(id, dateTimeTicks, originatesFromPlayer, player, parameters?.Split(';')));
         }
-
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void EditorCheckComponentExistsOnScene()
-        {
-            if(FindFirstObjectByType<NetworkManager>() != null && FindFirstObjectByType<NetworkLogEvents>() == null)
-            {
-                Debug.LogError($"A Networking scene should include a {typeof(NetworkLogEvents)} component.");
-            }
-        }
-#endif
     }
 }

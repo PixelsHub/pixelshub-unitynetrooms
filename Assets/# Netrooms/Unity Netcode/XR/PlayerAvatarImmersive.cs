@@ -128,6 +128,26 @@ namespace PixelsHub.Netrooms
 #endif
         }
 
+        protected override void ApplyPlayerColor(Color color)
+        {
+            base.ApplyPlayerColor(color);
+
+            avatarHandLeft.SetColor(color);
+            avatarHandRight.SetColor(color);
+        }
+
+        protected override void LocalProcessWorldOriginScaleChanged(Vector3 scale)
+        {
+            SetAvatarHandMaterialScaleRpc(scale);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void SetAvatarHandMaterialScaleRpc(Vector3 scale) 
+        {
+            avatarHandLeft.SetMaterialScale(scale);
+            avatarHandRight.SetMaterialScale(scale);
+        }
+
         private void HandleLeftHandTrackedChanged(bool previousValue, bool newValue)
         {
             avatarHandLeft.SetHandActive(newValue);
@@ -266,11 +286,11 @@ namespace PixelsHub.Netrooms
 
                 if(LocalXRHandReference.hands.TryGetValue(hand.handedness, out var localHand))
                 {
-                    var origin = NetworkWorldOrigin.Transform;
+                    var relativeTransform = headRoot.transform;
 
                     var value = wrist.Value;
-                    value.wristPosition = origin.InverseTransformPoint(localHand.WristPosition);
-                    value.wristRotation = Quaternion.Inverse(origin.rotation) * localHand.WristRotation;
+                    value.wristPosition = relativeTransform.InverseTransformPoint(localHand.WristPosition);
+                    value.wristRotation = Quaternion.Inverse(relativeTransform.rotation) * localHand.WristRotation;
 
                     if(Vector3.Distance(value.wristPosition, wrist.Value.wristPosition) > wristPositionThreshold ||
                         Quaternion.Angle(value.wristRotation, wrist.Value.wristRotation) > wristRotationAngleThreshold)
@@ -301,5 +321,16 @@ namespace PixelsHub.Netrooms
             }
         }
 #endif
+
+        private void OnValidate()
+        {
+            const string invalidHandParentingLog = "Avatar Hands should be children of the head transform.";
+
+            if(avatarHandLeft != null)
+                Debug.Assert(avatarHandLeft.transform.IsChildOf(headRoot.transform), invalidHandParentingLog);
+
+            if(avatarHandRight != null)
+                Debug.Assert(avatarHandRight.transform.IsChildOf(headRoot.transform), invalidHandParentingLog);
+        }
     }
 }

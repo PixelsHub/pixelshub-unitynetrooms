@@ -16,9 +16,9 @@ namespace PixelsHub.Netrooms
             this.pool = pool;   
         }
 
-        public void Play(Vector3 position, Quaternion rotation, NetworkPlayer player) 
+        public void Play(Vector3 worldPosition, Quaternion worldRotation, NetworkPlayer player) 
         {
-            transform.SetLocalPositionAndRotation(position, rotation);
+            transform.SetPositionAndRotation(worldPosition, worldRotation);
 
             if(player != null)
             {

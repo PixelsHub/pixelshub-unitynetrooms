@@ -58,6 +58,15 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private AvatarJoint[] joints;
 
+        [Header("Render")]
+        [SerializeField]
+        private Renderer targetRenderer;
+
+        [SerializeField]
+        private int targetMaterialIndex = 1;
+
+        private Material TargetMaterial => targetRenderer.materials[targetMaterialIndex];
+
         private Vector3 startWristPosition;
         private Vector3 endWristPosition;
         private Quaternion startWristRotation;
@@ -68,6 +77,23 @@ namespace PixelsHub.Netrooms
         {
             if(rootObject.activeSelf != isVisible)
                 rootObject.SetActive(isVisible);
+        }
+
+        public void SetColor(Color color)
+        {
+            color.a = 0.85f;
+            TargetMaterial.SetColor("_EdgeColor", color);
+            color.a = 0.8f;
+            TargetMaterial.SetColor("_ThumbColor", color);
+            TargetMaterial.SetColor("_FingerColor_1", color);
+            TargetMaterial.SetColor("_FingerColor_2", color);
+            TargetMaterial.SetColor("_FingerColor_3", color);
+            TargetMaterial.SetColor("_FingerColor_4", color);
+        }
+
+        public void SetMaterialScale(Vector3 scale)
+        {
+            TargetMaterial.SetVector("_ObjectScale", scale);
         }
 
         public void SetWristPose(Vector3 position, Quaternion rotation, bool interpolate = true)
