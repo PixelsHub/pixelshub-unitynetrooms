@@ -29,7 +29,7 @@ public class NetroomsDemo : MonoBehaviour
             }
         }
 
-        NetworkEvents.OnEventInvoked += (ev) => 
+        NetworkLogEvents.OnEventInvoked += (ev) => 
         {
             Debug.Log($"{ev.parameters[0]} - {ev.parameters[1]}");
         };
@@ -42,7 +42,7 @@ public class NetroomsDemo : MonoBehaviour
             testEvent = false;
 
             ulong player = NetworkPlayer.Local != null ? NetworkPlayer.Local.OwnerClientId : 0;
-            NetworkEvents.Add("EXAMPLE", player, new string[] { "hey", "hou" });
+            NetworkLogEvents.Add("EXAMPLE", player, new string[] { "hey", "hou" });
         }
     }
 }

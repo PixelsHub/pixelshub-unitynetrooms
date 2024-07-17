@@ -11,6 +11,8 @@ namespace PixelsHub.Netrooms
 
         public static NetworkWorldOrigin Instance { get; private set; }
 
+        public static Transform Transform => Instance.transform;
+
         public override void OnNetworkSpawn()
         {
             Instance = this;

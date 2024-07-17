@@ -53,6 +53,20 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private PlayerAvatar immersiveAvatarPrefab;
 
+        public static ulong[] GeneratePlayersOwnerClientIds()
+        {
+            ulong[] result = new ulong[players.Count];
+
+            int i = 0;
+            foreach(ulong id in players.Keys)
+            {
+                result[i] = id;
+                i++;
+            }
+
+            return result;
+        }
+
         public void Kick(string reason = null) 
         {
             if(!IsServer)
@@ -139,7 +153,7 @@ namespace PixelsHub.Netrooms
             while(NetworkPlayerSlots.Instance == null || !NetworkPlayerSlots.Instance.IsSpawned)
                 yield return null;
 
-            if(IsSpawned) // Ensure player has not been despawned during the wait
+            if(IsSpawned) // Ensure no despawn ocurred during the wait
             {
                 if(NetworkPlayerSlots.Instance.TryAssignPlayerSlot(this, out int index))
                 {

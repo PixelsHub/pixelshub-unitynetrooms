@@ -2,6 +2,7 @@
     "name": "PixelsHub.Netrooms.UX",
     "rootNamespace": "PixelsHub.Netrooms",
     "references": [
+        "PixelsHub.UnityBasics",
         "PixelsHub.Netrooms",
         "Unity.TextMeshPro"
     ],

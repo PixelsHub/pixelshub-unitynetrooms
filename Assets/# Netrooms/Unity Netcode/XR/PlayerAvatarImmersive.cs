@@ -266,7 +266,7 @@ namespace PixelsHub.Netrooms
 
                 if(LocalXRHandReference.hands.TryGetValue(hand.handedness, out var localHand))
                 {
-                    var origin = NetworkWorldOrigin.Instance.transform;
+                    var origin = NetworkWorldOrigin.Transform;
 
                     var value = wrist.Value;
                     value.wristPosition = origin.InverseTransformPoint(localHand.WristPosition);
