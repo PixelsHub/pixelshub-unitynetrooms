@@ -283,6 +283,7 @@ GameObject:
   - component: {fileID: 5507219190790648802}
   - component: {fileID: 3119711849569317961}
   - component: {fileID: 2271686221009419639}
+  - component: {fileID: 3117255683955953836}
   m_Layer: 5
   m_Name: Player Info Canvas
   m_TagString: Untagged
@@ -357,3 +358,15 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 1
+--- !u!114 &3117255683955953836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7024807973030660270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb243f8ff78180b4098782d7ad8ab7ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

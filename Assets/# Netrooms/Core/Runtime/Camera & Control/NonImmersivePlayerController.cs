@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace PixelsHub.Netrooms
 {
-    public class NonImmersivePlayerController : MonoBehaviour, IPointerInputReceiver
+    public class NonImmersivePlayerController : MonoBehaviour
     {
         public NonImmersiveNavigationContext NavigationContext;
 
@@ -15,9 +15,6 @@ namespace PixelsHub.Netrooms
         private TransformOrbiter cameraOrbiter;
 
         [Header("Input")]
-        [SerializeField]
-        private PointerInput pointerInput;
-
         [SerializeField]
         private LayerMask dragPointerHitMask = 1;
 
@@ -36,14 +33,16 @@ namespace PixelsHub.Netrooms
 
         private void Start()
         {
-            pointerInput.inputReceiver = this;
+            PointerInput.OnDragBegan += BeginDrag;
+            PointerInput.OnDragged += Drag;
 
             zoomAction = InputSystem.actions.FindAction(zoomActionName);
         }
 
-        public void Click(PointerEventData data) 
+        private void OnDestroy()
         {
-
+            PointerInput.OnDragBegan -= BeginDrag;
+            PointerInput.OnDragged -= Drag;
         }
 
         public void BeginDrag(PointerEventData data)
@@ -84,13 +83,9 @@ namespace PixelsHub.Netrooms
 #endif
         }
 
-        public void EndDrag(PointerEventData data)
-        {
-        }
-
         private void Update()
         {
-            if(pointerInput.HoveringPointersCount == 0)
+            if(PointerInput.HoveringPointersCount == 0)
                 return;
 
             var zoom = zoomAction.ReadValue<Vector2>();

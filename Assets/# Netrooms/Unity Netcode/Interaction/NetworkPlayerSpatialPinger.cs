@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Unity.Netcode;
 
@@ -5,6 +6,7 @@ namespace PixelsHub.Netrooms
 {
     public class NetworkPlayerSpatialPinger : NetworkBehaviour
     {
+        [Serializable]
         public class Pool : GameObjectPool<PlayerSpatialPing> 
         {
             protected override void InitializeInstantiatedObject(PlayerSpatialPing obj)
@@ -16,8 +18,14 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private Pool pool;
 
-        public void Ping(Vector3 position, Vector3 euler)
+        public void Ping(Vector3 position, Quaternion rotation)
         {
+            if(!IsSpawned)
+            {
+                Debug.LogWarning("Spatial Pings should not be performed if not connected.");
+                return;
+            }
+
             Debug.Assert(IsClient);
 
             if(NetworkPlayer.Local == null)
@@ -26,7 +34,7 @@ namespace PixelsHub.Netrooms
                 return;
             }
 
-            CreatePingRpc(position, euler, NetworkPlayer.Local.OwnerClientId);
+            CreatePingRpc(position, rotation.eulerAngles, NetworkPlayer.Local.OwnerClientId);
         }
 
         [Rpc(SendTo.ClientsAndHost)]

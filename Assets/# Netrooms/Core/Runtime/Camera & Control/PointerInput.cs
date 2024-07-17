@@ -4,49 +4,44 @@ using UnityEngine.EventSystems;
 
 namespace PixelsHub.Netrooms
 {
-    public interface IPointerInputReceiver
-    {
-        public void Click(PointerEventData eventData);
-
-        public void BeginDrag(PointerEventData eventData);
-
-        public void Drag(PointerEventData eventData);
-
-        public void EndDrag(PointerEventData eventData);
-    }
-
     [RequireComponent(typeof(RectTransform))]
     public class PointerInput : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler,
         IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        public int DraggingPointersCount{ get; private set; }
+        public static event Action<PointerEventData> OnClicked;
+        public static event Action<PointerEventData> OnDragBegan;
+        public static event Action<PointerEventData> OnDragged;
+        public static event Action<PointerEventData> OnDragEnded;
 
-        public int HoveringPointersCount { get; private set; }
+        public static int DraggingPointersCount{ get; private set; }
 
-        public IPointerInputReceiver inputReceiver;
+        public static int HoveringPointersCount { get; private set; }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            inputReceiver.Click(eventData);
+            if(DraggingPointersCount > 0)
+                return;
+
+            OnClicked?.Invoke(eventData);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            inputReceiver.Drag(eventData);
+            OnDragged?.Invoke(eventData);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
             DraggingPointersCount++;
 
-            inputReceiver.BeginDrag(eventData);
+            OnDragBegan?.Invoke(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             DraggingPointersCount--;
 
-            inputReceiver.EndDrag(eventData);
+            OnDragEnded?.Invoke(eventData);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
