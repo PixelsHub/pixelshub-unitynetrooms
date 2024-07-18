@@ -8,4 +8,4 @@
 [Player Permissions](docs/PlayerPermissions.md)
 ### Built-in additional features
 [HTTP](docs/Http.md)\
-[Chat](docs/Chat.md)
+[Text Chat](docs/TextChat.md)
