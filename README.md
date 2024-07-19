@@ -2,12 +2,12 @@
 
 ## Documentation
 [Transformations](docs/Transformations.md)\
-[Immersiveness (XR)](docs/Immersiveness.md)
+[Immersiveness (XR)](docs/Immersiveness.md)\
+[UX](docs/UX.md)
 ### Player
 [Player Basics](docs/PlayerBasics.md)\
 [Player Avatar](docs/PlayerAvatar.md)\
 [Player Permissions](docs/PlayerPermissions.md)
 ### Built-in features
-[UX](docs/UX.md)\
 [HTTP](docs/Http.md)\
 [Text Chat](docs/TextChat.md)
