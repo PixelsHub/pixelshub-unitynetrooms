@@ -8,5 +8,6 @@
 [Player Avatar](docs/PlayerAvatar.md)\
 [Player Permissions](docs/PlayerPermissions.md)
 ### Built-in features
+[UX](docs/UX.md)\
 [HTTP](docs/Http.md)\
 [Text Chat](docs/TextChat.md)
