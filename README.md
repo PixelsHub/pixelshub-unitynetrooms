@@ -5,6 +5,7 @@
 [Immersiveness (XR)](docs/Immersiveness.md)
 ### Player
 [Player Basics](docs/PlayerBasics.md)\
+[Player Avatar](docs/PlayerAvatar.md)\
 [Player Permissions](docs/PlayerPermissions.md)
 ### Built-in additional features
 [HTTP](docs/Http.md)\
