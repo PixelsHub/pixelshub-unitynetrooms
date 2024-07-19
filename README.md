@@ -3,7 +3,7 @@
 ## Documentation
 [Transformations](docs/Transformations.md)\
 [Immersiveness (XR)](docs/Immersiveness.md)\
-[UX](docs/UX.md)
+[User Experience](docs/UX.md)
 ### Player
 [Player Basics](docs/PlayerBasics.md)\
 [Player Avatar](docs/PlayerAvatar.md)\
