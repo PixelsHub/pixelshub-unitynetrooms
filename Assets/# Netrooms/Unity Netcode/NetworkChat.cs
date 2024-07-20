@@ -11,15 +11,16 @@ namespace PixelsHub.Netrooms
 {
     public class NetworkChat : HttpInitializedNetworkBehaviour
     {
+        // TODO: Add different message types
         public class Message : INetworkSerializable
         {
-            public long ticks;
+            public long dateTimeTicks;
             public string author;
             public string text;
 
             public virtual void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
             {
-                serializer.SerializeValue(ref ticks);
+                serializer.SerializeValue(ref dateTimeTicks);
                 serializer.SerializeValue(ref author);
                 serializer.SerializeValue(ref text);
             }
@@ -29,11 +30,16 @@ namespace PixelsHub.Netrooms
 
         public override string HttpUrlPath => "chat";
 
+        protected override bool PerformInitialClientReplicationOnSpawn => showPreviousMessagesToNewClients;
+
+        [SerializeField]
+        private bool showPreviousMessagesToNewClients = true;
+
         private List<Message> messages;
 
         public void AddMessage(Message message) 
         {
-            message.ticks = DateTime.UtcNow.Ticks;
+            message.dateTimeTicks = DateTime.UtcNow.Ticks;
             messages.Add(message);
             OnMessageAdded?.Invoke(message);
 
@@ -84,7 +90,7 @@ namespace PixelsHub.Netrooms
                 int index = messages.Count - 1;
                 var comp = messages[index];
 
-                while(comp.ticks > messages[index].ticks && index > 0)
+                while(comp.dateTimeTicks > messages[index].dateTimeTicks && index > 0)
                     index--;
 
                 messages.Insert(index, message);

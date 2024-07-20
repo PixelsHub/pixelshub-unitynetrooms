@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
@@ -7,16 +8,24 @@ namespace PixelsHub.Netrooms
     [DisallowMultipleComponent]
     public class PlayerAvatar : NetworkBehaviour
     {
+        [Serializable]
+        private class ColorTarget
+        {
+            public Renderer renderer;
+            public int materialIndex;
+        }
+
         public NetworkPlayer Player { get; private set; }
 
         [SerializeField]
         private GameObject[] visualizationRoots;
 
+        [SerializeField]
+        private ColorTarget[] colorTargets;
+
         [Header("Head")]
         [SerializeField]
         protected NetworkTransform headRoot;
-
-        private Renderer[] headRenderers;
 
         public override void OnNetworkSpawn()
         {
@@ -64,11 +73,6 @@ namespace PixelsHub.Netrooms
             }
         }
 
-        protected virtual void Awake()
-        {
-            headRenderers = headRoot.GetComponentsInChildren<Renderer>();
-        }
-
         protected virtual void LateUpdate()
         {
             if(IsLocalPlayer && LocalPlayerRig.Instance != null)
@@ -114,8 +118,16 @@ namespace PixelsHub.Netrooms
 
         protected virtual void ApplyPlayerColor(Color color)
         {
-            foreach(var renderer in headRenderers)
-                renderer.material.color = color;
+            if(colorTargets == null)
+                return;
+
+            foreach(var colorTarget in colorTargets)
+            {
+                if(colorTarget.renderer.materials.Length > colorTarget.materialIndex)
+                    colorTarget.renderer.materials[colorTarget.materialIndex].color = color;
+                else
+                    Debug.LogWarning($"Missing material at index {colorTarget.materialIndex} on target renderer {colorTarget.renderer}.");
+            }
         }
     }
 }

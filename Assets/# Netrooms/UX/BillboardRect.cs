@@ -5,13 +5,13 @@ using UnityEngine;
 namespace PixelsHub.Netrooms.UX
 {
     [RequireComponent(typeof(RectTransform))]
-    public class Billboard : MonoBehaviour
+    public class BillboardRect : MonoBehaviour
     {
         public static Transform cameraTransform;
 
         private static IEnumerator updateCoroutine;
 
-        private static readonly List<Billboard> cache = new(12);
+        private static readonly List<BillboardRect> cache = new(12);
 
         private RectTransform rectTransform;
 

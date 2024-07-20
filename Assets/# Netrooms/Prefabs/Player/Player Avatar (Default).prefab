@@ -70,6 +70,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualizationRoots:
   - {fileID: 1699484202241631780}
+  colorTargets:
+  - renderer: {fileID: 906696391906002929}
+    materialIndex: 0
   headRoot: {fileID: 3247020494197952583}
 --- !u!114 &191841896597189649
 MonoBehaviour:
@@ -383,6 +386,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
+--- !u!23 &906696391906002929 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
+  m_PrefabInstance: {fileID: 1969390463954525045}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1699484202241631780 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}

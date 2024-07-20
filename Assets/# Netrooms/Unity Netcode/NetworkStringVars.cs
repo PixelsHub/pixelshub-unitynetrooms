@@ -17,7 +17,7 @@ namespace PixelsHub.Netrooms
 
         public int Count => variables.Count;
 
-        public IEnumerable<KeyValuePair<string, string>> Variables => variables;
+        public IReadOnlyDictionary<string, string> Variables => variables;
 
         private Dictionary<string, string> variables = new();
 

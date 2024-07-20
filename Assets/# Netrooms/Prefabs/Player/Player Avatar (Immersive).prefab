@@ -523,6 +523,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualizationRoots:
   - {fileID: 5780228652345027214}
+  colorTargets:
+  - renderer: {fileID: 5419944874203990875}
+    materialIndex: 0
   headRoot: {fileID: 8321505878196692805}
   avatarHandLeft: {fileID: 5324756971660577596}
   avatarHandRight: {fileID: 8917612890856282659}
@@ -2626,6 +2629,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
+--- !u!23 &5419944874203990875 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
+  m_PrefabInstance: {fileID: 6698566253889607647}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5780228652345027214 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}

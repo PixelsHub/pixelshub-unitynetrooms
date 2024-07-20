@@ -1,9 +1,10 @@
 {
     "name": "PixelsHub.Netrooms.UX",
-    "rootNamespace": "PixelsHub.Netrooms",
+    "rootNamespace": "PixelsHub.Netrooms.UX",
     "references": [
         "PixelsHub.UnityBasics",
         "PixelsHub.Netrooms",
+        "PixelsHub.Netrooms.Unitynetcode",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [],

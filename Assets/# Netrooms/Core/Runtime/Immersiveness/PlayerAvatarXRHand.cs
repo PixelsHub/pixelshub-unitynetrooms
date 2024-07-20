@@ -49,6 +49,14 @@ namespace PixelsHub.Netrooms
         private const float wristInterpolationTime = 0.12f;
         private const float jointInterpolationTime = 0.15f;
 
+        private static readonly int handColorProperty = Shader.PropertyToID("_EdgeColor");
+        private static readonly int thumbColorProperty = Shader.PropertyToID("_ThumbColor");
+        private static readonly int finger1ColorProperty = Shader.PropertyToID("_FingerColor_1");
+        private static readonly int finger2ColorProperty = Shader.PropertyToID("_FingerColor_2");
+        private static readonly int finger3ColorProperty = Shader.PropertyToID("_FingerColor_3");
+        private static readonly int finger4ColorProperty = Shader.PropertyToID("_FingerColor_4");
+        private static readonly int handScaleProperty = Shader.PropertyToID("_ObjectScale");
+
         [SerializeField]
         private GameObject rootObject;
 
@@ -82,18 +90,19 @@ namespace PixelsHub.Netrooms
         public void SetColor(Color color)
         {
             color.a = 0.85f;
-            TargetMaterial.SetColor("_EdgeColor", color);
+            TargetMaterial.SetColor(handColorProperty, color);
+
             color.a = 0.8f;
-            TargetMaterial.SetColor("_ThumbColor", color);
-            TargetMaterial.SetColor("_FingerColor_1", color);
-            TargetMaterial.SetColor("_FingerColor_2", color);
-            TargetMaterial.SetColor("_FingerColor_3", color);
-            TargetMaterial.SetColor("_FingerColor_4", color);
+            TargetMaterial.SetColor(thumbColorProperty, color);
+            TargetMaterial.SetColor(finger1ColorProperty, color);
+            TargetMaterial.SetColor(finger2ColorProperty, color);
+            TargetMaterial.SetColor(finger3ColorProperty, color);
+            TargetMaterial.SetColor(finger4ColorProperty, color);
         }
 
         public void SetMaterialScale(Vector3 scale)
         {
-            TargetMaterial.SetVector("_ObjectScale", scale);
+            TargetMaterial.SetVector(handScaleProperty, scale);
         }
 
         public void SetWristPose(Vector3 position, Quaternion rotation, bool interpolate = true)

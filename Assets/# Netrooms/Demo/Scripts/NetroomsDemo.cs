@@ -1,7 +1,7 @@
 using UnityEngine;
 using PixelsHub.Netrooms;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEditor;
 
 public class NetroomsDemo : MonoBehaviour
 {
@@ -36,7 +36,7 @@ public class NetroomsDemo : MonoBehaviour
 
         NetworkLogEvents.OnEventInvoked += (ev) => 
         {
-            Debug.Log($"{ev.parameters[0]} - {ev.parameters[1]}");
+            // Debug.Log($"{ev.parameters[0]}");
         };
 
         PointerInput.OnClicked += (ev) => 
@@ -49,30 +49,19 @@ public class NetroomsDemo : MonoBehaviour
         };
     }
 
+    int logEventCount;
     private void OnValidate()
     {
         if(testEvent)
         {
             testEvent = false;
 
-            ulong player = NetworkPlayer.Local != null ? NetworkPlayer.Local.OwnerClientId : 0;
-            NetworkLogEvents.Add("EXAMPLE", player, new string[] { "hey", "hou" });
+            EditorApplication.delayCall += () => 
+            {
+                Color color = NetworkPlayer.Local != null ? NetworkPlayer.Local.Color : PlayerColoringScheme.undefinedColor;
+                logEventCount++;
+                NetworkLogEvents.Add(logEventCount.ToString(), color, new string[] { "hey", "hou" });
+            };
         }
-    }
-
-    public void Click(PointerEventData eventData)
-    {
-    }
-
-    public void BeginDrag(PointerEventData eventData)
-    {
-    }
-
-    public void Drag(PointerEventData eventData)
-    {
-    }
-
-    public void EndDrag(PointerEventData eventData)
-    {
     }
 }

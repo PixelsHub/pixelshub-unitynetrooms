@@ -16,6 +16,8 @@ namespace PixelsHub.Netrooms
     {
         public abstract string HttpUrlPath { get; }
 
+        protected virtual bool PerformInitialClientReplicationOnSpawn { get => true; }
+
         protected HttpServer httpServer;
 
         protected bool isHttpInitializationCompleted;

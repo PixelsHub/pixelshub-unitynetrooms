@@ -10,6 +10,13 @@ namespace PixelsHub.Netrooms
     [DisallowMultipleComponent]
     public class NetworkPlayer : NetworkBehaviour
     {
+        public class LogEventId
+        {
+            public const string playerConnected = "PLAYER_CONNECTED";
+            public const string playerDisconnected = "PLAYER_DISCONNECTED";
+            public const string playerKicked = "PLAYER_KICKED";
+        }
+
         /// <summary>
         /// Invoked for spawned players that have been validated by the server.
         /// </summary>
@@ -77,9 +84,12 @@ namespace PixelsHub.Netrooms
 
             if(IsLocalPlayer)
             {
-                Debug.Assert(false, "Kicking the host player should never be attempted.");
+                Debug.Assert(false, "Kicking the host player is not allowed and should never be attempted.");
                 return;
             }
+
+            string[] logParams = new string[] { userIdentifier.Value.ToString(), reason };
+            NetworkLogEvents.Add(LogEventId.playerKicked, Color, logParams);
 
             NetworkManager.Singleton.StartCoroutine(KickCoroutine());
 
@@ -122,14 +132,19 @@ namespace PixelsHub.Netrooms
         {
             if(IsLocalPlayer)
                 Local = null;
-
+            
             colorIndex.OnValueChanged -= HandleColorIndexChanged;
 
             if(players.Remove(OwnerClientId))
             {
                 if(IsServer)
+                {
                     NetworkPlayerSlots.Instance.RemovePlayerFromSlot(this);
-                
+                    
+                    string[] logParams = new string[] { userIdentifier.Value.ToString() };
+                    NetworkLogEvents.Add(LogEventId.playerDisconnected, Color, logParams);
+                }
+
                 OnValidatedPlayerDespawned?.Invoke(this);
             }
         }
@@ -157,11 +172,14 @@ namespace PixelsHub.Netrooms
             {
                 if(NetworkPlayerSlots.Instance.TryAssignPlayerSlot(this, out int index))
                 {
-                    colorIndex.Value = FindAvailableColor(index);
+                    colorIndex.Value = FindAvailableColorIndex(index);
 
                     validated.Value = true;
                     InitializeValidatedPlayer();
                     InitializeValidatedPlayerClientsRpc();
+
+                    string[] logParams = new string[] { userIdentifier.Value.ToString() };
+                    NetworkLogEvents.Add(LogEventId.playerConnected, Color, logParams);
                 }
                 else
                     Kick(NetworkPlayerSlots.limitReachedReason);
@@ -242,7 +260,7 @@ namespace PixelsHub.Netrooms
             return PlayerDeviceCategory.Undefined;
         }
 
-        private int FindAvailableColor(int desirableIndex)
+        private int FindAvailableColorIndex(int desirableIndex)
         {
             foreach(var player in players.Values)
             {
