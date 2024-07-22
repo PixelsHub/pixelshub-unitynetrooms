@@ -18,6 +18,23 @@ namespace PixelsHub.Netrooms
             }
         }
 
+        public event Action<bool> OnLocalPlayerAllowedToPingChanged;
+
+        public bool IsLocalPlayerAllowedToPing
+        {
+            get => isLocalPlayerAllowedToPing;
+            set
+            {
+                if(isLocalPlayerAllowedToPing == value)
+                {
+                    isLocalPlayerAllowedToPing = value;
+                    OnLocalPlayerAllowedToPingChanged?.Invoke(value);
+                }
+            }
+        }
+
+        private bool isLocalPlayerAllowedToPing = true;
+
         [SerializeField]
         private Pool pool;
 
@@ -31,19 +48,25 @@ namespace PixelsHub.Netrooms
 
             Debug.Assert(IsClient);
 
+            if(!isLocalPlayerAllowedToPing)
+            {
+                Debug.LogWarning($"Local client is not allowed to ping.");
+                return;
+            }
+
             if(NetworkPlayer.Local == null)
             {
                 Debug.LogError("No local player found.");
                 return;
             }
 
-            var localPosition = NetworkWorldOrigin.Transform.InverseTransformPoint(worldPosition);
-            var localRotation = Quaternion.Inverse(NetworkWorldOrigin.Transform.rotation) * worldRotation;
-            CreatePingRpc(localPosition, localRotation.eulerAngles, NetworkPlayer.Local.OwnerClientId);
+            var relativePosition = NetworkWorldOrigin.Transform.InverseTransformPoint(worldPosition);
+            var relativeRotation = Quaternion.Inverse(NetworkWorldOrigin.Transform.rotation) * worldRotation;
+            CreatePingRpc(relativePosition, relativeRotation.eulerAngles, NetworkPlayer.Local.OwnerClientId);
         }
 
         [Rpc(SendTo.ClientsAndHost)]
-        private void CreatePingRpc(Vector3 localPosition, Vector3 localEuler, ulong playerId) 
+        private void CreatePingRpc(Vector3 relativePosition, Vector3 relativeEuler, ulong playerId) 
         {
             if(!IsSpawned)
                 return;
@@ -56,8 +79,8 @@ namespace PixelsHub.Netrooms
                 Debug.LogError($"Could not find player (id={playerId}) for spatial ping.");
 
             var origin = NetworkWorldOrigin.Transform; // Relative to world origin
-            var worldPosition = origin.TransformPoint(localPosition);
-            var worldRotation = origin.rotation * Quaternion.Euler(localEuler);
+            var worldPosition = origin.TransformPoint(relativePosition);
+            var worldRotation = origin.rotation * Quaternion.Euler(relativeEuler);
 
             ping.Play(worldPosition, worldRotation, player);
         }

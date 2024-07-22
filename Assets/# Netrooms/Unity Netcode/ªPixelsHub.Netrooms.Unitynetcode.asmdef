@@ -6,7 +6,9 @@
         "PixelsHub.Netrooms",
         "Unity.Netcode.Runtime",
         "Unity.Netcode.Components",
-        "Unity.Collections"
+        "Unity.Collections",
+        "Unity.XR.Interaction.Toolkit",
+        "Unity.XR.Hands"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
