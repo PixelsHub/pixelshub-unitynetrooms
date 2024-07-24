@@ -1,12 +1,13 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-#pragma warning disable CS0108
 namespace PixelsHub.Netrooms
 {
     public class LocalPlayerRig : MonoBehaviour
     {
+        public static event Action<LocalPlayerRig> OnInstanceSet;
+
         public static LocalPlayerRig Instance { get; private set; }
 
         public Transform Pivot => pivot;
@@ -16,8 +17,10 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private Transform pivot;
 
+#pragma warning disable CS0108
         [SerializeField]
         private Camera camera;
+#pragma warning restore CS0108
 
         private void Awake()
         {
@@ -28,6 +31,7 @@ namespace PixelsHub.Netrooms
             }
 
             Instance = this;
+            OnInstanceSet?.Invoke(this);
         }
 
         private void OnDestroy()
@@ -37,4 +41,3 @@ namespace PixelsHub.Netrooms
         }
     }
 }
-#pragma warning restore CS0108

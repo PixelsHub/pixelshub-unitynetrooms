@@ -85,11 +85,13 @@ namespace PixelsHub.Netrooms
 
         private void Update()
         {
-            if(PointerInput.HoveringPointersCount == 0)
-                return;
+            if(PointerInput.HoveringPointersCount > 0)
+                ProcessZoom();
+        }
 
+        private void ProcessZoom() 
+        {
             var zoom = zoomAction.ReadValue<Vector2>();
-
             cameraOrbiter.distance -= zoom.y * Time.unscaledDeltaTime * zoomSensitivity;
         }
 
@@ -105,7 +107,6 @@ namespace PixelsHub.Netrooms
             point -= camera.transform.right * worldDelta.x;
             point -= camera.transform.up * worldDelta.y;
             cameraOrbiter.orbitPoint = point;
-
         }
 
         private Vector3 ScreenToWorldPoint(Vector3 screenPoint)

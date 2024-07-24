@@ -1,11 +1,26 @@
 using System;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
     public class NetworkSpatialManipulationTarget : NetworkBehaviour
     {
+        [Serializable]
+        private struct NetworkInteraction : INetworkSerializable
+        {
+            public bool isSelected;
+            public ulong clientId;
+
+            public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+            {
+                serializer.SerializeValue(ref isSelected);
+                serializer.SerializeValue(ref clientId);
+            }
+        }
+
         public event Action<bool> OnLocalPlayerAllowedToManipulateChanged;
 
         public bool IsLocalPlayerAllowedToManipulate
@@ -21,14 +36,23 @@ namespace PixelsHub.Netrooms
             }
         }
 
+        [HideInInspector]
         public bool isLocalPlayerAllowedToManipulate = true;
 
-        public bool IsBeingManipulated => isBeingManipulated.Value;
+        public bool IsSelected => interaction.Value.isSelected;
 
-        public ulong ManipulationClientId => manipulationClientId.Value;
+        public bool IsBlocked => interaction.Value.isSelected;
 
-        public bool IsManipulationClientLocal => ManipulationClientId == NetworkPlayer.Local.OwnerClientId;
+        public ulong InteractionClientId => interaction.Value.clientId;
 
+        public bool IsInteractionClientLocal => InteractionClientId == NetworkPlayer.Local.OwnerClientId;
+
+        public bool IsSelectedByLocalPlayer => IsSelected && IsInteractionClientLocal;
+
+        [SerializeField]
+        private XRBaseInteractable interactable;
+
+        [Space(8)]
         [SerializeField]
         private float positionThreshold = 0.001f;
 
@@ -42,8 +66,7 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private float interpolationTime = 0.2f;
 
-        private readonly NetworkVariable<bool> isBeingManipulated = new(false);
-        private readonly NetworkVariable<ulong> manipulationClientId = new();
+        private readonly NetworkVariable<NetworkInteraction> interaction = new();
 
         private Vector3 targetPosition;
         private Quaternion targetRotation;
@@ -57,24 +80,9 @@ namespace PixelsHub.Netrooms
         private float rotationTimer = -1;
         private float scaleTimer = -1;
 
-        public bool switchManipulationTest;
-
-        private void OnValidate()
-        {
-            if(switchManipulationTest)
-            {
-                switchManipulationTest = false;
-
-                if(IsBeingManipulated)
-                    EndManipulation();
-                else
-                    BeginManipulation();
-            }
-        }
-
         public void BeginManipulation() 
         {
-            if(IsBeingManipulated)   
+            if(IsSelected)
             {
                 Debug.LogWarning($"Attempted to manipulate a blocked manipulation target.");
                 return;
@@ -86,12 +94,12 @@ namespace PixelsHub.Netrooms
                 return;
             }
 
-            BeginManipulationServerRpc(NetworkPlayer.Local.OwnerClientId);
+            InteractionSelectServerRpc(NetworkPlayer.Local.OwnerClientId);
         }
 
         public void EndManipulation() 
         {
-            if(IsBeingManipulated && IsManipulationClientLocal)
+            if(IsSelectedByLocalPlayer)
             {
                 EndManipulationServerRpc();
             }
@@ -105,8 +113,16 @@ namespace PixelsHub.Netrooms
                 targetRotation = transform.localRotation;
                 targetScale = transform.localScale;
 
-                NetworkManager.Singleton.OnClientConnectedCallback += ServerHandleClientConnected;
-                NetworkManager.Singleton.OnClientDisconnectCallback += ServerHandleClientDisconnected;
+                NetworkManager.Singleton.OnClientConnectedCallback += InitializeConnectedClient;
+                NetworkManager.Singleton.OnClientDisconnectCallback += TryEndCurrentManipulationByClient;
+            }
+
+            if(IsClient)
+            {
+                interactable.selectEntered.AddListener(HandleSelectEntered);
+                interactable.selectExited.AddListener(HandleSelectExited);
+                interactable.hoverEntered.AddListener(HandleHoverEntered);
+                interactable.hoverExited.AddListener(HandleHoverExited);
             }
         }
 
@@ -114,41 +130,71 @@ namespace PixelsHub.Netrooms
         {
             if(IsServer)
             {
-                NetworkManager.Singleton.OnClientConnectedCallback -= ServerHandleClientConnected;
-                NetworkManager.Singleton.OnClientDisconnectCallback -= ServerHandleClientDisconnected;
+                NetworkManager.Singleton.OnClientConnectedCallback -= InitializeConnectedClient;
+                NetworkManager.Singleton.OnClientDisconnectCallback -= TryEndCurrentManipulationByClient;
             }
         }
 
-        private void ServerHandleClientConnected(ulong client)
+        private void InitializeConnectedClient(ulong client)
         {
             RpcParams p = RpcTarget.Single(client, RpcTargetUse.Temp);
             InitializeTransformRpc(targetPosition, targetRotation, targetScale, p);
         }
 
-        private void ServerHandleClientDisconnected(ulong client)
+        private void TryEndCurrentManipulationByClient(ulong client)
         {
-            if(IsBeingManipulated && client == ManipulationClientId)
-            {
+            if(IsSelected && client == InteractionClientId)
                 ServerEndManipulation();
+        }
+
+        private void HandleSelectEntered(SelectEnterEventArgs args)
+        {
+            if(IsBlocked)
+                return;
+
+            BeginManipulation();
+        }
+
+        private void HandleSelectExited(SelectExitEventArgs args)
+        {
+            if(!IsSelected)
+                return;
+
+            if(IsInteractionClientLocal)
+            {
+                EndManipulation();
             }
         }
 
-        [Rpc(SendTo.Server)]
-        private void BeginManipulationServerRpc(ulong player)
+        private void HandleHoverEntered(HoverEnterEventArgs args)
         {
-            if(isBeingManipulated.Value)
+
+        }
+
+        private void HandleHoverExited(HoverExitEventArgs args)
+        {
+
+        }
+
+        [Rpc(SendTo.Server)]
+        private void InteractionSelectServerRpc(ulong clientId)
+        {
+            if(interaction.Value.isSelected)
             {
+                Debug.LogWarning($"Received select request for blocked object from player ({clientId}). This is likely a race condition.");
                 return;
             }
 
-            isBeingManipulated.Value = true;
-            manipulationClientId.Value = player;
+            var value = interaction.Value;
+            value.isSelected = true;
+            value.clientId = clientId;
+            interaction.Value = value;
         }
 
         [Rpc(SendTo.Server)]
         private void EndManipulationServerRpc()
         {
-            if(!isBeingManipulated.Value)
+            if(!IsSelected)
             {
                 Debug.Assert(false);
                 return;
@@ -192,12 +238,12 @@ namespace PixelsHub.Netrooms
             scaleTimer = interpolationTime;
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             if(!IsSpawned)
                 return;
 
-            if(IsBeingManipulated && IsManipulationClientLocal) // Local manipulation
+            if(IsSelectedByLocalPlayer) // Local manipulation
             {
                 if(Vector3.Distance(targetPosition, transform.localPosition) > positionThreshold)
                 {
@@ -250,8 +296,10 @@ namespace PixelsHub.Netrooms
 
         private void ServerEndManipulation()
         {
-            isBeingManipulated.Value = false;
-            manipulationClientId.Value = 0;
+            var value = interaction.Value;
+            value.isSelected = false;
+            value.clientId = 0;
+            interaction.Value = value;
         }
     }
 }
