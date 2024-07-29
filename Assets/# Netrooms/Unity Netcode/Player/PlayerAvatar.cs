@@ -5,33 +5,32 @@ using Unity.Netcode.Components;
 
 namespace PixelsHub.Netrooms
 {
+    public interface IPlayerAvatarColorTarget 
+    {
+        void ApplyPlayerColor(Color color);
+    }
+
     [DisallowMultipleComponent]
     public class PlayerAvatar : NetworkBehaviour
     {
-        [Serializable]
-        private class ColorTarget
-        {
-            public Renderer renderer;
-            public int materialIndex;
-        }
-
         public NetworkPlayer Player { get; private set; }
 
         [SerializeField]
         private GameObject[] visualizationRoots;
 
-        [SerializeField]
-        private ColorTarget[] colorTargets;
-
         [Header("Head")]
         [SerializeField]
         protected NetworkTransform headRoot;
+
+        private IPlayerAvatarColorTarget[] colorTargets;
 
         public override void OnNetworkSpawn()
         {
             if(NetworkPlayer.Players.TryGetValue(OwnerClientId, out var player))
             {
                 Player = player;
+
+                colorTargets = GetComponentsInChildren<IPlayerAvatarColorTarget>();
 
                 ApplyPlayerColor(player.Color);
                 player.OnColorChanged += ApplyPlayerColor;
@@ -118,16 +117,9 @@ namespace PixelsHub.Netrooms
 
         protected virtual void ApplyPlayerColor(Color color)
         {
-            if(colorTargets == null)
-                return;
-
-            foreach(var colorTarget in colorTargets)
-            {
-                if(colorTarget.renderer.materials.Length > colorTarget.materialIndex)
-                    colorTarget.renderer.materials[colorTarget.materialIndex].color = color;
-                else
-                    Debug.LogWarning($"Missing material at index {colorTarget.materialIndex} on target renderer {colorTarget.renderer}.");
-            }
+            if(colorTargets != null)
+                foreach(var colorTarget in colorTargets)
+                    colorTarget.ApplyPlayerColor(color);
         }
     }
 }

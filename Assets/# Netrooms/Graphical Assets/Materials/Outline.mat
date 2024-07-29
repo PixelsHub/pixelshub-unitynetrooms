@@ -23,7 +23,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 4002
+  m_CustomRenderQueue: 2999
   stringTagMap:
     DisableBatching: true
     RenderType: Opaque
@@ -148,16 +148,16 @@ Material:
     - _VertexExtrusionConstantWidth: 0
     - _VertexExtrusionSmoothNormal: 1
     - _VertexExtrusionSmoothNormals: 1
-    - _VertexExtrusionValue: 0.01
+    - _VertexExtrusionValue: 0.02
     - _ZOffsetFactor: 0
     - _ZOffsetUnits: 0
-    - _ZTest: 8
-    - _ZWrite: 1
+    - _ZTest: 4
+    - _ZWrite: 0
     m_Colors:
     - _BlurBackgroundRect: {r: 0, g: 0, b: 1, a: 1}
     - _BorderColor: {r: 1, g: 1, b: 1, a: 0}
     - _ClippingBorderColor: {r: 1, g: 0.2, b: 0, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.16470589, g: 0.61960787, b: 0.4117647, a: 1}
     - _EmissiveColor: {r: 0, g: 0, b: 0, a: 1}
     - _EnvironmentColorX: {r: 1, g: 0, b: 0, a: 1}
     - _EnvironmentColorY: {r: 0, g: 1, b: 0, a: 1}
