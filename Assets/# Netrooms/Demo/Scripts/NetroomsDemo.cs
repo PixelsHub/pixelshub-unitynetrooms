@@ -49,6 +49,7 @@ public class NetroomsDemo : MonoBehaviour
         };
     }
 
+#if UNITY_EDITOR
     int logEventCount;
     private void OnValidate()
     {
@@ -64,4 +65,5 @@ public class NetroomsDemo : MonoBehaviour
             };
         }
     }
+#endif
 }

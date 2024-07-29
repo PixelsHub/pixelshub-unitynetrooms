@@ -8,7 +8,7 @@ namespace PixelsHub.Netrooms
 {
     public class NonImmersiveInteractor : XRBaseInputInteractor
     {
-        private Camera LocalCamera => LocalPlayerRig.Instance.Camera;
+        private Camera localCamera;
 
         private IXRInteractable target;
         private IXRHoverInteractable hoverTarget;
@@ -37,10 +37,10 @@ namespace PixelsHub.Netrooms
         {
             targets.Clear();
 
-            if(hoverTarget != null)
-                targets.Add(hoverTarget);
-            else if(selectableTarget != null) // In case target is selectable and not hoverable
+            if(selectableTarget != null)
                 targets.Add(selectableTarget);
+            else if(hoverTarget != null) // In case target is hoverable and not selectable
+                targets.Add(hoverTarget);
         }
 
         protected override void OnEnable()
@@ -65,13 +65,19 @@ namespace PixelsHub.Netrooms
 
         private void Update()
         {
+            if(localCamera == null)
+                localCamera = LocalPlayerRig.Instance.Camera;
+
             UpdateHovering();
         }
 
-        private Ray GetMouseRay() => LocalCamera.ScreenPointToRay(PointerInput.MousePosition);
+        private Ray GetMouseRay() => localCamera.ScreenPointToRay(PointerInput.MousePosition);
 
         private void UpdateHovering() 
         {
+            if(selectableTarget != null) // Ignore hovering while selecting
+                return;
+
             if(PointerInput.HoveringPointersCount > 0 && TryGetInteractableTarget(GetMouseRay(), out var newTarget))
             {
                 if(newTarget != target)
@@ -111,7 +117,7 @@ namespace PixelsHub.Netrooms
             if(eventData.button != PointerEventData.InputButton.Right)
                 return;
 
-            dragStartRay = LocalCamera.ScreenPointToRay(eventData.position);
+            dragStartRay = localCamera.ScreenPointToRay(eventData.position);
 
             if(target != null || TryGetInteractableTarget(dragStartRay, out target))
             {
@@ -133,7 +139,7 @@ namespace PixelsHub.Netrooms
 
             if(selectableTarget != null)
             {
-                var ray = LocalCamera.ScreenPointToRay(eventData.position);
+                var ray = localCamera.ScreenPointToRay(eventData.position);
                 transform.position = GetRayPoint(ray, dragDistance) + dragOffset;
             }
         }
@@ -153,24 +159,33 @@ namespace PixelsHub.Netrooms
             }
         }
 
-        private bool TryGetInteractableTarget(Ray pointerRay, out IXRInteractable target)
+        protected virtual bool TryGetInteractableTarget(Ray pointerRay, out IXRInteractable target)
         {
+            target = null;
+
             int count = Physics.SphereCastNonAlloc(pointerRay, sphereCastRadius, raycastHits, raycastDistance, raycastMask);
 
-            return TryGetInteractableTarget(count, raycastHits, out target);
-        }
+            float closestSqrDistance = Mathf.Infinity;
 
-        private bool TryGetInteractableTarget(int raycastHitCount, RaycastHit[] hits, out IXRInteractable target)
-        {
-            for(int i = 0; i < raycastHitCount; i++)
+            for(int i = 0; i < count; i++)
             {
-                var raycastHit = hits[i];
+                var raycastHit = raycastHits[i];
 
-                if(interactionManager.TryGetInteractableForCollider(raycastHit.collider, out target))
-                    return true;
+                if(interactionManager.TryGetInteractableForCollider(raycastHit.collider, out var possibleTarget))
+                {
+                    float sqrDistance = (raycastHit.point - pointerRay.origin).sqrMagnitude;
+
+                    if(sqrDistance < closestSqrDistance)
+                    {
+                        closestSqrDistance = sqrDistance;
+                        target = possibleTarget;
+                    }
+                }
             }
 
-            target = null;
+            if(target != null)
+                return true;
+
             return false;
         }
     }

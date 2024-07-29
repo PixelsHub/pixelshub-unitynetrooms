@@ -20,13 +20,15 @@ namespace PixelsHub.Netrooms
 
         [Space(8)]
         [SerializeField]
-        private float zoomSensitivity = 10;
+        private float rotationSensitivity = 160;
+
+        [SerializeField]
+        private float zoomSensitivity = 16;
 
         [SerializeField]
         private string zoomActionName = "Zoom";
 
         private float dragStartDistance;
-        private float dragStartHitDistance;
         private Vector3 previousDragWorldPosition;
 
         private InputAction zoomAction;
@@ -52,7 +54,6 @@ namespace PixelsHub.Netrooms
             Ray ray = new(camera.transform.position, camera.transform.forward);
             if(Physics.Raycast(ray, out var hit, dragStartDistance, dragPointerHitMask))
             {
-                dragStartHitDistance = Vector3.Distance(hit.point, cameraOrbiter.orbitPoint);
                 dragStartDistance = Vector3.Distance(hit.point, camera.transform.position);
             }
 
@@ -61,26 +62,26 @@ namespace PixelsHub.Netrooms
 
         public void Drag(PointerEventData data) 
         {
+            Vector2 ScreenDelta() => data.delta / new Vector2(Screen.width, Screen.height);
+
             var worldPosition = ScreenToWorldPoint(data.position);
 
-            Vector3 delta = worldPosition - previousDragWorldPosition;
-
-            previousDragWorldPosition = worldPosition;
-
-#if UNITY_STANDALONE
+#if UNITY_EDITOR || UNITY_STANDALONE
             switch(data.button)
             {
                 case PointerEventData.InputButton.Left:
-                    Rotate(delta);
+                    Rotate(ScreenDelta());
                     break;
 
                 case PointerEventData.InputButton.Middle:
-                    Translate(delta);
+                    Translate(worldPosition - previousDragWorldPosition);
                     break;
             }
 #else
-            Rotate(delta);
+            Rotate(ScreenDelta());
 #endif
+
+            previousDragWorldPosition = worldPosition;
         }
 
         private void Update()
@@ -95,10 +96,10 @@ namespace PixelsHub.Netrooms
             cameraOrbiter.distance -= zoom.y * Time.unscaledDeltaTime * zoomSensitivity;
         }
 
-        private void Rotate(Vector2 worldDelta) 
+        private void Rotate(Vector2 screenDelta) 
         {
-            cameraOrbiter.Rotation += worldDelta.x / dragStartHitDistance * 90;
-            cameraOrbiter.Pitch -= worldDelta.y / dragStartHitDistance * 90;
+            cameraOrbiter.Rotation += screenDelta.x * rotationSensitivity;
+            cameraOrbiter.Pitch -= screenDelta.y * rotationSensitivity;
         }
 
         private void Translate(Vector2 worldDelta) 

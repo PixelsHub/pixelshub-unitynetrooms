@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Text;
 using UnityEngine;
 
@@ -13,13 +13,13 @@ namespace PixelsHub.Netrooms.UX
         private float itemLifetimeSeconds = -1;
 
         [SerializeField]
-        private LogEventItem itemPrefab;
+        private LogEventListItem itemPrefab;
 
-        private LogEventItem[] items;
+        private LogEventListItem[] items;
 
         private void Start()
         {
-            items = new LogEventItem[itemCount];
+            items = new LogEventListItem[itemCount];
 
             for(int i = 0; i < itemCount; i++)
             {
@@ -39,6 +39,16 @@ namespace PixelsHub.Netrooms.UX
 
         private void HandleEvent(LogEvent logEvent) 
         {
+            try
+            {
+                if(ShouldEventBeIgnored(logEvent))
+                    return;
+            }
+            catch(Exception ex)
+            {
+                Debug.LogException(ex);
+            }
+
             for(int i = items.Length - 1; i > 0; i--)
                 items[i].Copy(items[i - 1]);
 
@@ -54,6 +64,21 @@ namespace PixelsHub.Netrooms.UX
                     sb.Append(" (").Append(p).Append(")");
 
             return sb.ToString();
+        }
+
+        protected virtual bool ShouldEventBeIgnored(LogEvent logEvent) 
+        {
+            switch(logEvent.id)
+            {
+                case NetworkPlayer.LogEventId.playerConnected:
+                case NetworkPlayer.LogEventId.playerDisconnected:
+                    if(logEvent.parameters[0] == LocalPlayerUserIdentifier.Value)
+                        return true;
+
+                    break;
+            }
+
+            return false;
         }
     }
 }

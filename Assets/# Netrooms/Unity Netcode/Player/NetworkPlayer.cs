@@ -35,7 +35,7 @@ namespace PixelsHub.Netrooms
 
         public static IReadOnlyDictionary<ulong, NetworkPlayer> Players => players;
 
-        public FixedString512Bytes UserIdentifier => userIdentifier.Value;
+        public string UserIdentifier => userIdentifier.Value.ToString();
         
         public PlayerDeviceCategory DeviceCategory => deviceCategory.Value;
 
@@ -137,10 +137,10 @@ namespace PixelsHub.Netrooms
 
             if(players.Remove(OwnerClientId))
             {
-                if(IsServer)
+                if(IsServer && !IsClient) // Hosts do not report removal since their despawn means a network shutdown
                 {
                     NetworkPlayerSlots.Instance.RemovePlayerFromSlot(this);
-                    
+
                     string[] logParams = new string[] { userIdentifier.Value.ToString() };
                     NetworkLogEvents.Add(LogEventId.playerDisconnected, Color, logParams);
                 }
@@ -232,7 +232,7 @@ namespace PixelsHub.Netrooms
             else
                 targetPrefab = defaultAvatarPrefab;
 
-            Avatar = Instantiate(targetPrefab, transform);
+            Avatar = Instantiate(targetPrefab);
             Avatar.NetworkObject.SpawnAsPlayerObject(ownerClientId);
         }
 

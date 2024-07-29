@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PixelsHub.Netrooms.UX
 {
-    public class LogEventItem : MonoBehaviour
+    public class LogEventListItem : MonoBehaviour
     {
         public bool IsAlive { get; private set; }
 
@@ -46,7 +46,7 @@ namespace PixelsHub.Netrooms.UX
             Set(processedText, logEvent.color, dateTime, lifetime);
         }
 
-        public void Copy(LogEventItem item) 
+        public void Copy(LogEventListItem item) 
         {
             IsAlive = item.IsAlive;
 

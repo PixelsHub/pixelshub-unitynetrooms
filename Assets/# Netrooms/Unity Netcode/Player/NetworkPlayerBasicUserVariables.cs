@@ -37,8 +37,7 @@ namespace PixelsHub.Netrooms
             }
         }
 
-
-        private static readonly string noRoleValue = "NO_ROLE";
+        private static readonly string noRoleValue = string.Empty;
 
         private static string localDisplayName = string.Empty;
         private static string localRole = noRoleValue;
@@ -62,6 +61,9 @@ namespace PixelsHub.Netrooms
             if(IsLocalPlayer)
             {
                 Local = this;
+
+                if(string.IsNullOrEmpty(localDisplayName))
+                    localDisplayName = LocalPlayerUserIdentifier.Value;
 
                 displayName.Value = localDisplayName;
                 role.Value = localRole;

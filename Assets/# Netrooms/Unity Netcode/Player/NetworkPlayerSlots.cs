@@ -147,19 +147,11 @@ namespace PixelsHub.Netrooms
 
             if(IsServer)
             {
-                Debug.Assert(playerSlots.Count == 0);
+                playerSlots.Clear();
 
                 for(int i = 0; i < maximumAmount; i++)
                     playerSlots.Add(new());
             }
-        }
-
-        public override void OnNetworkDespawn()
-        {
-            Debug.Assert(Instance == this);
-
-            if(IsServer)
-                playerSlots.Clear();
         }
 
         public bool TryAssignPlayerSlot(NetworkPlayer player, out int slotIndex)

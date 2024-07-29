@@ -66,7 +66,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee1f43aa3c919944187aef3aea073ff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultLocalPlayerPrefab: {fileID: 1515073662985966040, guid: 3c5c59069b65c7d47b3f2bb3be4fd06e, type: 3}
-  immersiveLocalPlayerPrefab: {fileID: 3301132084936897487, guid: 9ad4ad54a96a223438af5d8d99936079, type: 3}
   defaultAvatarPrefab: {fileID: 8260935742337873876, guid: ad697d623e0f17b46a02f6b3e96bfa47, type: 3}
   immersiveAvatarPrefab: {fileID: 398017777469426998, guid: dec0fa6d65b956248a1f1fd2dd1525fd, type: 3}
+  spawnTest: {fileID: 8440736471181941490, guid: b65a588459622d24da78ffaec2d3575b, type: 3}

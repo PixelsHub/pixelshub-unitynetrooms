@@ -143,7 +143,8 @@ MonoBehaviour:
   dragPointerHitMask:
     serializedVersion: 2
     m_Bits: 1
-  zoomSensitivity: 10
+  rotationSensitivity: 160
+  zoomSensitivity: 16
   zoomActionName: Zoom
 --- !u!114 &1793829570860162511
 MonoBehaviour:
@@ -416,7 +417,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_InputActionReferencePerformed: {fileID: 0}
+    m_InputActionReferencePerformed: {fileID: 1781555164194001046, guid: ae5a3cd706df1ea428a263ba8f650055, type: 3}
     m_InputActionReferenceValue: {fileID: 0}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualPerformed: 0
