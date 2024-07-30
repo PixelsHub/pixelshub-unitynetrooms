@@ -5,6 +5,7 @@
         "PixelsHub.UnityBasics",
         "PixelsHub.Netrooms",
         "PixelsHub.Netrooms.Unitynetcode",
+        "Unity.Netcode.Runtime",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [],

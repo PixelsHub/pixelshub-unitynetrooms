@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1103253546863652502}
   - component: {fileID: 5725922569331999817}
   - component: {fileID: 383097314859447595}
-  - component: {fileID: 5590908399539015753}
   m_Layer: 0
   m_Name: Avatar Head
   m_TagString: Untagged
@@ -79,52 +78,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d55c9af16e3d2438a03a4798b52d91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outline: {fileID: 2609309453670786902}
+  outline: {fileID: 1967724693145946743}
   materialTargets:
   - renderer: {fileID: 7992781315635647487}
     materialIndex: 0
---- !u!114 &5590908399539015753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1180376034173177196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d5ddd4dbb160104b90ec51c215f1a03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onDisplayNameSet:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4359010925973923927}
-        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-        m_MethodName: set_text
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onRoleSet:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3265274099249392436}
-        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
-        m_MethodName: set_text
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &3069831061154479184
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,7 +174,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 80
   m_fontSizeBase: 72
   m_fontWeight: 400
   m_enableAutoSizing: 0
@@ -424,7 +381,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8305966562132514476}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.035}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -434,7 +391,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.25}
+  m_AnchoredPosition: {x: 0, y: 0.28}
   m_SizeDelta: {x: 600, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4139626441037490763
@@ -577,7 +534,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2609309453670786902}
+      addedObject: {fileID: 1967724693145946743}
   m_SourcePrefab: {fileID: 100100000, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
 --- !u!23 &7992781315635647487 stripped
 MeshRenderer:
@@ -589,7 +546,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
   m_PrefabInstance: {fileID: 8731782465220579195}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2609309453670786902
+--- !u!114 &1967724693145946743
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

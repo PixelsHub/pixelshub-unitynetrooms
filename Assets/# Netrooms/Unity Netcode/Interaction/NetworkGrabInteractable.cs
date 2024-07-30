@@ -6,7 +6,7 @@ using Unity.Netcode;
 namespace PixelsHub.Netrooms
 {
     [RequireComponent(typeof(XRGrabInteractable))]
-    public class NetworkInteractionGrabTarget : NetworkInteractable
+    public class NetworkGrabInteractable : NetworkInteractable
     {
         [Space(8)]
         [SerializeField]

@@ -32,11 +32,16 @@ namespace PixelsHub.Netrooms
             }
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
+            if(Application.isPlaying)
+                return;
+
             if(outline == null)
                 if(!TryGetComponent(out outline))
                     outline = GetComponentInChildren<MeshOutline>();
         }
+#endif
     }
 }

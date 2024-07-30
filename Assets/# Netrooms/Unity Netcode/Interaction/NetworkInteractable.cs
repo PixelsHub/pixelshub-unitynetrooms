@@ -10,14 +10,14 @@ namespace PixelsHub.Netrooms
     public class NetworkInteractable : NetworkBehaviour
     {
         [Serializable]
-        protected struct NetworkSelect : INetworkSerializable
+        protected struct NetworkInteraction : INetworkSerializable
         {
-            public bool isSelected;
+            public bool isActive;
             public ulong clientId;
 
             public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
             {
-                serializer.SerializeValue(ref isSelected);
+                serializer.SerializeValue(ref isActive);
                 serializer.SerializeValue(ref clientId);
             }
         }
@@ -40,15 +40,13 @@ namespace PixelsHub.Netrooms
             }
         }
 
-        public bool IsSelected => interaction.Value.isSelected;
+        public bool IsSelected => selection.Value.isActive;
 
-        public bool IsBlocked => interaction.Value.isSelected;
+        public ulong SelectionClientId => selection.Value.clientId;
 
-        public ulong InteractionClientId => interaction.Value.clientId;
+        public bool IsSelectionClientLocal => SelectionClientId == NetworkPlayer.Local.OwnerClientId;
 
-        public bool IsInteractionClientLocal => InteractionClientId == NetworkPlayer.Local.OwnerClientId;
-
-        public bool IsSelectedByLocalPlayer => IsSelected && IsInteractionClientLocal;
+        public bool IsSelectedByLocalPlayer => IsSelected && IsSelectionClientLocal;
 
         public XRBaseInteractable Interactable 
         {
@@ -66,14 +64,15 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private bool isLocalPlayerAllowedToSelect = true;
 
-        protected readonly NetworkVariable<NetworkSelect> interaction = new();
+        protected readonly NetworkVariable<NetworkInteraction> selection = new();
+        protected readonly NetworkVariable<NetworkInteraction> hover = new();
 
         public override void OnNetworkSpawn()
         {
             interactable.selectEntered.AddListener(HandleSelectEntered);
             interactable.selectExited.AddListener(HandleSelectExited);
 
-            interaction.OnValueChanged += HandleInteractionValueChanged;
+            selection.OnValueChanged += HandleInteractionValueChanged;
 
             if(IsServer)
             {
@@ -86,9 +85,9 @@ namespace PixelsHub.Netrooms
             interactable.selectEntered.RemoveListener(HandleSelectEntered);
             interactable.selectExited.RemoveListener(HandleSelectExited);
 
-            interaction.OnValueChanged -= HandleInteractionValueChanged;
+            selection.OnValueChanged -= HandleInteractionValueChanged;
 
-            if(interaction.Value.isSelected && interaction.Value.clientId == OwnerClientId)
+            if(selection.Value.isActive && selection.Value.clientId == OwnerClientId)
             {
                 NetworkPlayer.Players.TryGetValue(OwnerClientId, out var player);
                 OnSelectEnded.Invoke(player);
@@ -102,7 +101,7 @@ namespace PixelsHub.Netrooms
 
         private void HandleSelectEntered(SelectEnterEventArgs args)
         {
-            if(IsBlocked)
+            if(IsSelected)
                 return;
 
             if(!isLocalPlayerAllowedToSelect)
@@ -120,56 +119,52 @@ namespace PixelsHub.Netrooms
                 EndSelectionServerRpc();
         }
 
-        private void HandleInteractionValueChanged(NetworkSelect prevValue, NetworkSelect newValue)
+        private void HandleInteractionValueChanged(NetworkInteraction prevValue, NetworkInteraction newValue)
         {
-            string PlayerNotFoundLog() => $"Could not find player (id={newValue.clientId}).";
-
-            if(prevValue.isSelected)
+            static NetworkPlayer GetPlayer(ulong clientId)
             {
-                if(!NetworkPlayer.Players.TryGetValue(newValue.clientId, out var player))
-                    Debug.LogError(PlayerNotFoundLog());
+                if(!NetworkPlayer.Players.TryGetValue(clientId, out var player))
+                    Debug.LogError($"Could not find player (id={clientId}).");
+                return player;
+            }
 
+            if(prevValue.isActive)
+            {
                 foreach(var c in interactable.colliders)
                     c.enabled = true;
 
-                OnSelectEnded?.Invoke(player);
+                OnSelectEnded?.Invoke(GetPlayer(newValue.clientId));
             }
 
-            if(newValue.isSelected)
+            if(newValue.isActive)
             {
-                if(!NetworkPlayer.Players.TryGetValue(newValue.clientId, out var player))
-                    Debug.LogError(PlayerNotFoundLog());
-                
                 foreach(var c in interactable.colliders)
                     c.enabled = false;
                 
-                OnSelectStarted?.Invoke(player);
+                OnSelectStarted?.Invoke(GetPlayer(newValue.clientId));
             }
             else if(newValue.clientId != prevValue.clientId)
             {
-                if(!NetworkPlayer.Players.TryGetValue(newValue.clientId, out var player))
-                    Debug.LogError(PlayerNotFoundLog());
-
                 foreach(var c in interactable.colliders)
                     c.enabled = true;
 
-                OnSelectEnded?.Invoke(player);
+                OnSelectEnded?.Invoke(GetPlayer(newValue.clientId));
             }
         }
 
         [Rpc(SendTo.Server)]
         private void InteractionSelectServerRpc(ulong clientId)
         {
-            if(interaction.Value.isSelected)
+            if(selection.Value.isActive)
             {
                 Debug.LogWarning($"Received select request for blocked object from player ({clientId}). This is likely a race condition.");
                 return;
             }
 
-            var value = interaction.Value;
-            value.isSelected = true;
+            var value = selection.Value;
+            value.isActive = true;
             value.clientId = clientId;
-            interaction.Value = value;
+            selection.Value = value;
         }
 
         [Rpc(SendTo.Server)]
@@ -186,15 +181,15 @@ namespace PixelsHub.Netrooms
 
         private void TryEndCurrentSelectByClient(ulong client)
         {
-            if(IsSelected && client == InteractionClientId)
+            if(IsSelected && client == SelectionClientId)
                 ServerEndSelect();
         }
 
         private void ServerEndSelect()
         {
-            var value = interaction.Value;
-            value.isSelected = false;
-            interaction.Value = value;
+            var value = selection.Value;
+            value.isActive = false;
+            selection.Value = value;
         }
     }
 }

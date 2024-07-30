@@ -7,7 +7,7 @@ namespace PixelsHub.Netrooms
     public class NetworkInteractionOutlineVisuals : MonoBehaviour
     {
         [SerializeField]
-        private NetworkInteractionGrabTarget grabTarget;
+        private NetworkGrabInteractable grabTarget;
 
         [SerializeField]
         private MeshOutline outline;

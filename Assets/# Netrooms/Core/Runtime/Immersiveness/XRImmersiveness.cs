@@ -65,8 +65,12 @@ namespace PixelsHub.Netrooms
 
         private static bool IsImmersiveXRProviderActive()
         {
-#if !UNITY_EDITOR && !IMMERSIVE_XR_BUILD
+#if !UNITY_EDITOR
+#if IMMERSIVE_XR_BUILD
+            return true;
+#else
             return false;
+#endif
 #endif
 
             if(XRGeneralSettings.Instance == null)

@@ -72,7 +72,7 @@ namespace PixelsHub.Netrooms.UX
             {
                 case NetworkPlayer.LogEventId.playerConnected:
                 case NetworkPlayer.LogEventId.playerDisconnected:
-                    if(logEvent.parameters[0] == LocalPlayerUserIdentifier.Value)
+                    if(logEvent.parameters[0] == $"{NetworkPlayer.Local.OwnerClientId}")
                         return true;
 
                     break;

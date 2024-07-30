@@ -33,7 +33,7 @@ namespace PixelsHub.Netrooms
 
         public static NetworkPlayer Local { get; private set; }
 
-        public static IReadOnlyDictionary<ulong, NetworkPlayer> Players => players;
+        public static IReadOnlyDictionary<ulong, NetworkPlayer> Players => players; // Key is OwnerClientId
 
         public string UserIdentifier => userIdentifier.Value.ToString();
         
@@ -49,7 +49,7 @@ namespace PixelsHub.Netrooms
 
         private readonly NetworkVariable<FixedString512Bytes> userIdentifier = new(string.Empty);
 
-        private readonly NetworkVariable<PlayerDeviceCategory> deviceCategory = new(PlayerDeviceCategory.Undefined);
+        private readonly NetworkVariable<PlayerDeviceCategory> deviceCategory = new(PlayerDeviceCategory.Uninitialized);
 
         private readonly NetworkVariable<int> colorIndex = new
             (-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -60,7 +60,7 @@ namespace PixelsHub.Netrooms
         [SerializeField]
         private PlayerAvatar immersiveAvatarPrefab;
 
-        public static ulong[] GeneratePlayersOwnerClientIds()
+        public static ulong[] PlayersToOwnerClientIdsArray()
         {
             ulong[] result = new ulong[players.Count];
 
@@ -78,7 +78,7 @@ namespace PixelsHub.Netrooms
         {
             if(!IsServer)
             {
-                Debug.Assert(false);
+                Debug.Assert(false, "Kicking must only be performed from the server.");
                 return;
             }
 
@@ -111,37 +111,37 @@ namespace PixelsHub.Netrooms
 
                 Local = this;
 
-                if(IsServer) // Hosts do not need connection requirements validation
+                if(IsHost) // Hosts do not need connection requirements validation
                 {
                     userIdentifier.Value = LocalPlayerUserIdentifier.Value;
                     deviceCategory.Value = GetLocalPlayerDeviceCategory();
-
-                    StartCoroutine(FinalizeServerValidationCoroutine());
+                    ServerFinalizeSpawnedPlayerValidation();
                 }
                 else
-                    ValidateSpawnedLocalPlayerServerRpc(LocalPlayerUserIdentifier.Value, GetLocalPlayerDeviceCategory());
+                    ServerValidateSpawnedLocalPlayerRpc(LocalPlayerUserIdentifier.Value, GetLocalPlayerDeviceCategory());
             }
+
+            if(validated.Value)
+                InitializeValidatedPlayer();
             else
-            {
-                if(validated.Value) // Initialize alreay validated players
-                    InitializeValidatedPlayer();
-            }
+                validated.OnValueChanged += HandleValidatedValueChanged;
         }
 
         public override void OnNetworkDespawn()
         {
             if(IsLocalPlayer)
                 Local = null;
-            
+
+            validated.OnValueChanged -= HandleValidatedValueChanged;
             colorIndex.OnValueChanged -= HandleColorIndexChanged;
 
             if(players.Remove(OwnerClientId))
             {
-                if(IsServer && !IsClient) // Hosts do not report removal since their despawn means a network shutdown
+                if(IsServer && !IsClient) // Only non-host servers report removal since host despawn means network shutdown
                 {
                     NetworkPlayerSlots.Instance.RemovePlayerFromSlot(this);
 
-                    string[] logParams = new string[] { userIdentifier.Value.ToString() };
+                    string[] logParams = new string[] { $"{OwnerClientId}", $"{userIdentifier.Value}" };
                     NetworkLogEvents.Add(LogEventId.playerDisconnected, Color, logParams);
                 }
 
@@ -150,64 +150,80 @@ namespace PixelsHub.Netrooms
         }
 
         [Rpc(SendTo.Server)]
-        private void ValidateSpawnedLocalPlayerServerRpc(string userIdentifier, PlayerDeviceCategory deviceCategory)
+        private void ServerValidateSpawnedLocalPlayerRpc(string userIdentifier, PlayerDeviceCategory deviceCategory)
         {
             this.userIdentifier.Value = userIdentifier;
             this.deviceCategory.Value = deviceCategory;
 
             if(PlayerConnectionRequirement.IsPlayerAllowedToConnect(this, out string failureReason))
-                StartCoroutine(FinalizeServerValidationCoroutine());
+                ServerFinalizeSpawnedPlayerValidation();
             else
                 Kick(failureReason);
         }
 
-        private IEnumerator FinalizeServerValidationCoroutine() 
+        private void ServerFinalizeSpawnedPlayerValidation() 
         {
             Debug.Assert(IsServer);
 
-            while(NetworkPlayerSlots.Instance == null || !NetworkPlayerSlots.Instance.IsSpawned)
-                yield return null;
+            StartCoroutine(Coroutine());
 
-            if(IsSpawned) // Ensure no despawn ocurred during the wait
+            IEnumerator Coroutine()
             {
-                if(NetworkPlayerSlots.Instance.TryAssignPlayerSlot(this, out int index))
+                while(NetworkPlayerSlots.Instance == null || !NetworkPlayerSlots.Instance.IsSpawned)
+                    yield return null;
+
+                if(IsSpawned) // Ensure no despawn ocurred during the wait
                 {
-                    colorIndex.Value = FindAvailableColorIndex(index);
+                    if(NetworkPlayerSlots.Instance.TryAssignPlayerSlot(this, out int index))
+                    {
+                        colorIndex.Value = FindAvailableColorIndex(index);
 
-                    validated.Value = true;
-                    InitializeValidatedPlayer();
-                    InitializeValidatedPlayerClientsRpc();
+                        validated.Value = true;
 
-                    string[] logParams = new string[] { userIdentifier.Value.ToString() };
-                    NetworkLogEvents.Add(LogEventId.playerConnected, Color, logParams);
+                        string[] logParams = new string[] { $"{OwnerClientId}", $"{userIdentifier.Value}" };
+                        NetworkLogEvents.Add(LogEventId.playerConnected, Color, logParams);
+                    }
+                    else
+                        Kick(NetworkPlayerSlots.limitReachedReason);
                 }
-                else
-                    Kick(NetworkPlayerSlots.limitReachedReason);
             }
         }
 
-        [Rpc(SendTo.NotServer)]
-        private void InitializeValidatedPlayerClientsRpc() 
+        private void HandleValidatedValueChanged(bool wasValidated, bool isValidated)
         {
-            if(IsSpawned)
+            if(isValidated)
+            {
+                validated.OnValueChanged -= HandleValidatedValueChanged;
                 InitializeValidatedPlayer();
+            }
         }
-        
+
         private void InitializeValidatedPlayer()
         {
-            players.Add(OwnerClientId, this);
+            StartCoroutine(Coroutine());
 
-            if(IsLocalPlayer)
+            IEnumerator Coroutine()
             {
-                if(IsServer)
-                    SpawnPlayerAvatar(OwnerClientId, deviceCategory.Value);
-                else
-                    SpawnPlayerAvatarServerRpc(OwnerClientId, deviceCategory.Value);
+                while(deviceCategory.Value == PlayerDeviceCategory.Uninitialized)
+                    yield return null;
+
+                if(IsSpawned) // Could have been despawned
+                {
+                    players.Add(OwnerClientId, this);
+
+                    if(IsLocalPlayer)
+                    {
+                        if(IsServer)
+                            SpawnPlayerAvatar(OwnerClientId, deviceCategory.Value);
+                        else
+                            SpawnPlayerAvatarServerRpc(OwnerClientId, deviceCategory.Value);
+                    }
+
+                    colorIndex.OnValueChanged += HandleColorIndexChanged;
+
+                    OnSpawnedPlayerValidated?.Invoke(this);
+                }
             }
-
-            colorIndex.OnValueChanged += HandleColorIndexChanged;
-
-            OnSpawnedPlayerValidated?.Invoke(this);
         }
 
         [Rpc(SendTo.ClientsAndHost)]
@@ -218,7 +234,7 @@ namespace PixelsHub.Netrooms
         }
 
         [Rpc(SendTo.Server)]
-        private void SpawnPlayerAvatarServerRpc(ulong ownerClientId, PlayerDeviceCategory deviceCategory) 
+        private void SpawnPlayerAvatarServerRpc(ulong ownerClientId, PlayerDeviceCategory deviceCategory)
         {
             SpawnPlayerAvatar(ownerClientId, deviceCategory);
         }
