@@ -1,5 +1,6 @@
 # About
-Core project for networking cross-platform and cross-immersive applications using Unity Netcode for GameObjects.
+Core project for cross-platform and cross-immersive networking applications.\
+Current implementation uses **Unity Netcode for GameObjects**.
 
 ## Documentation
 [Transformations](docs/Transformations.md)\
@@ -14,6 +15,9 @@ Core project for networking cross-platform and cross-immersive applications usin
 [Text Chat](docs/TextChat.md)
 
 ## Known issues
+> [!IMPORTANT]
+> Unity's **Multiplayer Playmode** commonly causes errors when testing in the editor after changes in prefabs or scenes. It requires regular restart of players and possibly deletion of the *Library* folder. Android as target platform seems to not work correctly.
+
 > [!CAUTION]
 > Some texts with TextMeshPro seem to generate freezing problems when the player is spawned- This has lead to the current OpenSource font present in the project to not being used.
 
