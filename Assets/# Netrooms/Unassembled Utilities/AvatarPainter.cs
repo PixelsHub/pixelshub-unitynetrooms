@@ -11,6 +11,7 @@ namespace PixelsHub.Netrooms
         {
             public Renderer renderer;
             public int materialIndex;
+            public string property = "_MainColor";
         }
 
         [SerializeField]
@@ -23,12 +24,15 @@ namespace PixelsHub.Netrooms
         {
             outline.OutlineMaterial.color = color;
 
-            foreach(var materialTarget in materialTargets)
+            foreach(var mt in materialTargets)
             {
-                if(materialTarget.renderer.materials.Length > materialTarget.materialIndex)
-                    materialTarget.renderer.materials[materialTarget.materialIndex].color = color;
+                if(mt.renderer.materials.Length > mt.materialIndex)
+                {
+                    var mat = mt.renderer.materials[mt.materialIndex];
+                    mat.SetColor(mt.property, color);
+                }
                 else
-                    Debug.LogWarning($"Missing material at index {materialTarget.materialIndex} on target renderer {materialTarget.renderer}.");
+                    Debug.LogWarning($"Missing material at index {mt.materialIndex} on target renderer {mt.renderer}.");
             }
         }
 

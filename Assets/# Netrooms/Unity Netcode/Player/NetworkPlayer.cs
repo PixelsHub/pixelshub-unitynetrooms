@@ -133,6 +133,7 @@ namespace PixelsHub.Netrooms
                 Local = null;
 
             validated.OnValueChanged -= HandleValidatedValueChanged;
+
             colorIndex.OnValueChanged -= HandleColorIndexChanged;
 
             if(players.Remove(OwnerClientId))

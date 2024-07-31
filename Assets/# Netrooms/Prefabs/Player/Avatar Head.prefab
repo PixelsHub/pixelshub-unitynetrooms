@@ -82,6 +82,7 @@ MonoBehaviour:
   materialTargets:
   - renderer: {fileID: 7992781315635647487}
     materialIndex: 0
+    property: _Color
 --- !u!1 &3069831061154479184
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,10 +560,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMaterial: {fileID: 2100000, guid: 7f5e157bed58e9c4ca578fe73a9f6e39, type: 2}
-  outlineWidth: 0.02
+  outlineWidth: 0.015
   autoAssignRenderQueue: 1
-  useStencilOutline: 0
-  stencilWriteMaterial: {fileID: 0}
+  useStencilOutline: 1
+  stencilWriteMaterial: {fileID: 2100000, guid: 4ad8f3d9ed9af3445992ff858751079e, type: 2}
   outlineOffset: 0
   stencilReference: 1
 --- !u!4 &9126329822980106384 stripped
