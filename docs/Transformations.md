@@ -1,7 +1,13 @@
 [Return to main page](../)
 
-# Transformations
-Transformation synchronization is expected through built-in Unity Netcode components `NetworkTransform` and derived classes, with a core requirement based around an origin transform that will act as the root reference for any other transform-synchronized object.
+# Transformations Basics
+Most transformation synchronization is expected through built-in Unity Netcode components `NetworkTransform` and derived classes, with a core requirement based around an origin transform that will act as the root reference for any other transform-synchronized object.
+
+> [!NOTE]
+> Specific cases of transformations with custom implmentations will be added for some use cases, such as grab interactions or avatar hand synchronization.
+
+> [!TIP]
+> The default `NetworkTransform` component is always server authoritative. A simple override `NetworkTransformOwnerAuthority` with owner authority is provided.
 
 ### World Origin
 A scene **must** contain an object with the network singleton `NetworkWorldOrigin` which will act as the root of all synchronized transforms.
@@ -18,10 +24,7 @@ var origin = NetworkWorldOrigin.Transform;
 var value = wrist.Value;
 value.wristPosition = origin.InverseTransformPoint(localHand.WristPosition);
 value.wristRotation = Quaternion.Inverse(origin.rotation) * localHand.WristRotation;
-``` 
-
-> [!TIP]
-> The default `NetworkTransform` component is always server authoritative. A simple override `NetworkTransformOwnerAuthority` with owner authority is provided.
+```
 
 > [!NOTE]
 > Scale synchronization is supported and expected, since some users might, for example, want to look at a real sized scene as a miniature.
