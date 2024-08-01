@@ -3,8 +3,9 @@ Core project for cross-platform and cross-immersive networking applications.\
 Current implementation uses **Unity Netcode for GameObjects**.
 
 ## Documentation
-[Transformations](docs/Transformations.md)\
 [Immersiveness (XR)](docs/Immersiveness.md)\
+[Transformations Basics](docs/Transformations.md)\
+[Interactions](docs/Interactions.md)\
 [User Experience](docs/UX.md)
 ### Player
 [Player Basics](docs/PlayerBasics.md)\
