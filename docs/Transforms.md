@@ -3,15 +3,15 @@
 # Transforms
 Most transformation synchronization is expected through built-in Unity Netcode components `NetworkTransform` and derived classes, with a core requirement based around an origin transform that will act as the root reference for any other transform-synchronized object.
 
-> [!NOTE]
-> Specific cases of transformations with custom implementations are added for some use cases, such as grab interactions or avatar hand synchronization.
-
 > [!TIP]
 > The default `NetworkTransform` component is always server authoritative. A simple override `NetworkTransformOwnerAuthority` with owner authority is provided.
 
 > [!NOTE]
 > Scale synchronization is supported and expected, since some users might, for example, want to look at a real sized scene as a miniature.
 > Remember scaling needs to be set in the fields of each `NetworkTransform`.
+
+> [!NOTE]
+> Specific cases of transformations with custom implementations are added for some use cases, such as grab interactions or avatar hand synchronization.
 
 ### World Origin
 A scene **must** contain an object with the network singleton `NetworkWorldOrigin` which will act as the root of all synchronized transforms.
@@ -21,6 +21,9 @@ A scene **must** contain an object with the network singleton `NetworkWorldOrigi
 - Objects that may temporarily not be parented to the origin during custom implementation transformation synchronization should:
   - Lock their origin to ensure correctness while transformations occur through `NetworkWorldOrigin.AddLockTransformationRequest(object requester)` and `NetworkWorldOrigin.RemoveLockTransformationRequest(object requester)`
   - Ensure the transform data used for replication takes into account the relative-to-origin values
+
+> [!CAUTION]
+> It is **very important** to correctly control potential parenting changes to ensure the relative transformations towards the world origin, in cases where the world origin's transform is expected to change.
 
 The following example is a method used in the networking of **Grab Interactables** due to their parenting being changed when grabbed:
 ```
