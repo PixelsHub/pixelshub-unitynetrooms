@@ -4,7 +4,7 @@
 Most transformation synchronization is expected through built-in Unity Netcode components `NetworkTransform` and derived classes, with a core requirement based around an origin transform that will act as the root reference for any other transform-synchronized object.
 
 > [!NOTE]
-> Specific cases of transformations with custom implmentations will be added for some use cases, such as grab interactions or avatar hand synchronization.
+> Specific cases of transformations with custom implementations are added for some use cases, such as grab interactions or avatar hand synchronization.
 
 > [!TIP]
 > The default `NetworkTransform` component is always server authoritative. A simple override `NetworkTransformOwnerAuthority` with owner authority is provided.
@@ -16,7 +16,7 @@ A scene **must** contain an object with the network singleton `NetworkWorldOrigi
 - Objects with network transformation should be configured for local space.
 
 \
-For any transforms that might require manual synchronization, remember to use the origin transform reference for relative transformations, while taking into account if they may be or not children of the origin.\
+For any transforms that might require custom synchronization, remember to use the origin transform reference for relative transformations, while taking into account if they may be or not children of the origin.\
 The Immersive Avatar hands provide an example:
 ```C#
 var origin = NetworkWorldOrigin.Transform;
