@@ -18,7 +18,7 @@ A scene **must** contain an object with the network singleton `NetworkWorldOrigi
 - Any intended transforms to synchronize **must** be set as children of the origin.
 - The origin should be set itself **without** any `NetworkTransform` component, since it is expected to be moved locally without replication.
 - Objects with network transformation should be configured for local space.
-- Objects that may temporarily not be parented to the origin during custom implelmentation transformation synchronization should:
+- Objects that may temporarily not be parented to the origin during custom implementation transformation synchronization should:
   - Lock their origin to ensure correctness while transformations occur through `NetworkWorldOrigin.AddLockTransformationRequest(object requester)` and `NetworkWorldOrigin.RemoveLockTransformationRequest(object requester)`
   - Ensure the transform data used for replication takes into account the relative-to-origin values
 
