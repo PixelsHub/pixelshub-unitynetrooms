@@ -22,7 +22,7 @@ A scene **must** contain an object with the network singleton `NetworkWorldOrigi
   - Lock their origin to ensure correctness while transformations occur through `NetworkWorldOrigin.AddLockTransformationRequest(object requester)` and `NetworkWorldOrigin.RemoveLockTransformationRequest(object requester)`
   - Ensure the transform data used for replication takes into account the relative-to-origin values
 
-The following example is a method used in the networking of **Grab Interactables**, since their parenting is changed while being grabbed:
+The following example is a method used in the networking of **Grab Interactables** due to their parenting being changed when grabbed:
 ```
 private void ProcessLocalGrabTransformation() 
 {
