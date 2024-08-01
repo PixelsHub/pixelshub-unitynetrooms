@@ -34,9 +34,17 @@ namespace PixelsHub.Netrooms
         private float rotationTimer = -1;
         private float scaleTimer = -1;
 
+        private bool isWorldOriginLocked;
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+
+            if(transform.parent != NetworkWorldOrigin.Transform)
+            {
+                transform.SetParent(NetworkWorldOrigin.Transform);
+                Debug.LogWarning($"Object {name} was not spawned as chlid of world origin. Forcing parenting...");
+            }
 
             if(IsServer)
             {
@@ -56,12 +64,27 @@ namespace PixelsHub.Netrooms
             {
                 NetworkManager.Singleton.OnClientConnectedCallback -= InitializeTransformOnConnectedClient;
             }
+
+            if(isWorldOriginLocked)
+            {
+                isWorldOriginLocked = false;
+                NetworkWorldOrigin.RemoveLockTransformationRequest(this);
+            }
         }
 
         private void InitializeTransformOnConnectedClient(ulong client)
         {
             RpcParams p = RpcTarget.Single(client, RpcTargetUse.Temp);
             InitializeTransformOnClientRpc(targetPosition, targetRotation, targetScale, p);
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            // Interactables must always return to their previous parent (world origin)
+            if(interactable is XRGrabInteractable grabInteractable)
+                grabInteractable.retainTransformParent = true;
         }
 
         private void LateUpdate()
@@ -73,6 +96,24 @@ namespace PixelsHub.Netrooms
                 ProcessLocalGrabTransformation();
             else
                 SetTargetTransformations();
+        }
+
+        protected override void StartLocalPlayerSelect()
+        {
+            if(!isWorldOriginLocked)
+            {
+                isWorldOriginLocked = true;
+                NetworkWorldOrigin.AddLockTransformationRequest(this);
+            }
+        }
+
+        protected override void EndLocalPlayerSelect()
+        {
+            if(isWorldOriginLocked)
+            {
+                isWorldOriginLocked = false;
+                NetworkWorldOrigin.RemoveLockTransformationRequest(this);
+            }
         }
 
         [Rpc(SendTo.SpecifiedInParams)]
@@ -112,21 +153,23 @@ namespace PixelsHub.Netrooms
 
         private void ProcessLocalGrabTransformation() 
         {
-            if(Vector3.Distance(targetPosition, transform.localPosition) > positionThreshold)
+            var relative = NetworkWorldOrigin.WorldToLocal(new(transform.position, transform.rotation, transform.lossyScale));
+
+            if(Vector3.Distance(targetPosition, relative.position) > positionThreshold)
             {
-                targetPosition = transform.localPosition;
+                targetPosition = relative.position;
                 ReplicatePositionRpc(targetPosition);
             }
 
-            if(Quaternion.Angle(targetRotation, transform.localRotation) > rotationThreshold)
+            if(Quaternion.Angle(targetRotation, relative.rotation) > rotationThreshold)
             {
-                targetRotation = transform.localRotation;
+                targetRotation = relative.rotation;
                 ReplicateRotationRpc(targetRotation);
             }
 
-            if(Vector3.Distance(targetScale, transform.localScale) > scaleThreshold)
+            if(Vector3.Distance(targetScale, relative.scale) > scaleThreshold)
             {
-                targetScale = transform.localScale;
+                targetScale = relative.scale;
                 ReplicateScaleRpc(targetScale);
             }
         }

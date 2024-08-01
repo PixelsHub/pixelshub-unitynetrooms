@@ -104,16 +104,10 @@ namespace PixelsHub.Netrooms
             transform.SetParent(origin.transform);
         }
 
-        protected void LocalProcessWorldOriginScaleChanged()
+        protected virtual void LocalProcessWorldOriginScaleChanged()
         {
-            var originScale = NetworkWorldOrigin.Transform.localScale;
-            Vector3 compensatoryScale = new(1 / originScale.x, 1 / originScale.y, 1 / originScale.z);
-            headRoot.transform.localScale = compensatoryScale;
-
-            LocalSetWorldOriginCompensatoryScale(compensatoryScale);
+            headRoot.transform.localScale = NetworkWorldOrigin.InverseLocalScale;
         }
-
-        protected virtual void LocalSetWorldOriginCompensatoryScale(Vector3 scale) { }
 
         protected virtual void ApplyPlayerColor(Color color)
         {

@@ -22,7 +22,7 @@ namespace PixelsHub.Netrooms
         }
 
 #if UNITY_EDITOR || IMMERSIVE_XR_BUILD
-        private struct UpdateHandParameters
+        private class UpdateHandParameters
         {
             public XRHand hand;
             public NetworkVariable<bool> isHandTracked;
@@ -30,7 +30,13 @@ namespace PixelsHub.Netrooms
             public Dictionary<XRHandJointID, Quaternion> jointCache;
             public int jointIterationStartIndex;
             public int jointIterationEndIndex;
-            public Action<XRHandJointID, Quaternion> replicationAction;
+            public Action<XRHandJointID, Quaternion> jointReplicationAction;
+
+            public UpdateHandParameters(int jointIterationStartIndex, int jointIterationEndIndex) 
+            {
+                this.jointIterationStartIndex = jointIterationStartIndex;
+                this.jointIterationEndIndex = jointIterationEndIndex;
+            }
         }
 
         private static XRHandSubsystem handSubsystem;
@@ -45,8 +51,7 @@ namespace PixelsHub.Netrooms
         private readonly NetworkVariable<HandWrist> leftHandWrist = new(default, defaultReadPermission, defaultWritePremission);
         private readonly NetworkVariable<HandWrist> rightHandWrist = new(default, defaultReadPermission, defaultWritePremission);
 
-        // Inverted from local world origin scale
-        private readonly NetworkVariable<Vector3> worldOriginCompensatoryScale = new(Vector3.one, defaultReadPermission, defaultWritePremission);
+        private readonly NetworkVariable<Vector3> worldOriginInverseScale = new(Vector3.one, defaultReadPermission, defaultWritePremission);
 
         [Header("Hands")]
         [SerializeField]
@@ -74,9 +79,11 @@ namespace PixelsHub.Netrooms
         {
             base.OnNetworkSpawn();
 
-#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
             if(IsLocalPlayer)
             {
+                NetworkManager.Singleton.OnClientConnectedCallback += InitializeJointsForConnectedClient;
+
+#if UNITY_EDITOR || IMMERSIVE_XR_BUILD
                 avatarHandLeft.SetHandActive(false);
                 avatarHandRight.SetHandActive(false);
 
@@ -91,13 +98,10 @@ namespace PixelsHub.Netrooms
                 // Coroutine start on OnEnable function will not have identified IsLocalPlayer before spawn
                 if(!isLocalPlayerUpdatingHands)
                     StartCoroutine(UpdateLocalPlayerHandsCoroutine());
+#endif
             }
             else
             {
-#else
-            if(!IsLocalPlayer)
-            {
-#endif
                 avatarHandLeft.SetHandActive(isLeftHandTracked.Value);
                 avatarHandRight.SetHandActive(isRightHandTracked.Value);
                 SetHandWrist(avatarHandLeft, leftHandWrist.Value, false);
@@ -108,7 +112,7 @@ namespace PixelsHub.Netrooms
                 leftHandWrist.OnValueChanged += HandleLeftNetworkHandChanged;
                 rightHandWrist.OnValueChanged += HandleRightNetworkHandChanged;
 
-                worldOriginCompensatoryScale.OnValueChanged += HandleWorldOriginCompensatoryScaleChanged;
+                worldOriginInverseScale.OnValueChanged += HandleWorldOriginInverseScaleChanged;
             }
         }
         
@@ -116,15 +120,28 @@ namespace PixelsHub.Netrooms
         {
             base.OnNetworkDespawn();
 
-            if(!IsLocalPlayer)
+            if(IsLocalPlayer)
+            {
+                NetworkManager.Singleton.OnClientConnectedCallback -= InitializeJointsForConnectedClient;
+            }
+            else
             {
                 isLeftHandTracked.OnValueChanged = null;
                 isRightHandTracked.OnValueChanged = null;
                 leftHandWrist.OnValueChanged = null;
                 rightHandWrist.OnValueChanged = null;
 
-                worldOriginCompensatoryScale.OnValueChanged = null;
+                worldOriginInverseScale.OnValueChanged = null;
             }
+        }
+
+        private void InitializeJointsForConnectedClient(ulong client)
+        {
+            foreach(var joint in lastLeftHandJointCache)
+                ReplicateAvatarLeftHandJointRpc(joint.Key, joint.Value);
+
+            foreach(var joint in lastRightHandJointCache)
+                ReplicateAvatarRightHandJointRpc(joint.Key, joint.Value);
         }
 
         protected virtual void OnEnable()
@@ -143,12 +160,13 @@ namespace PixelsHub.Netrooms
             avatarHandRight.SetColor(color);
         }
 
-        protected override void LocalSetWorldOriginCompensatoryScale(Vector3 scale)
+        protected override void LocalProcessWorldOriginScaleChanged()
         {
-            worldOriginCompensatoryScale.Value = scale;
+            base.LocalProcessWorldOriginScaleChanged();
+            worldOriginInverseScale.Value = NetworkWorldOrigin.InverseLocalScale;
         }
 
-        private void HandleWorldOriginCompensatoryScaleChanged(Vector3 prev, Vector3 newScale) 
+        private void HandleWorldOriginInverseScaleChanged(Vector3 prev, Vector3 newScale) 
         {
             avatarHandLeft.SetMaterialScale(newScale);
             avatarHandRight.SetMaterialScale(newScale);
@@ -186,13 +204,13 @@ namespace PixelsHub.Netrooms
         [Rpc(SendTo.NotMe)]
         private void ReplicateAvatarLeftHandJointRpc(XRHandJointID jointId, Quaternion value)
         {
-            avatarHandLeft.ApplyJoint(jointId, value);
+            avatarHandLeft.SetJointLocalRotation(jointId, value);
         }
 
         [Rpc(SendTo.NotMe)]
         private void ReplicateAvatarRightHandJointRpc(XRHandJointID jointId, Quaternion value)
         {
-            avatarHandRight.ApplyJoint(jointId, value);
+            avatarHandRight.SetJointLocalRotation(jointId, value);
         }
 
 #if UNITY_EDITOR || IMMERSIVE_XR_BUILD
@@ -201,16 +219,17 @@ namespace PixelsHub.Netrooms
             if(!IsLocalPlayer)
                 throw new InvalidOperationException();
 
+            isLocalPlayerUpdatingHands = true;
+
             // These values provide good results
             // Do NOT use serialized fields
-            const int jointsPerBatch = 6;
-            const float jointBatchUpdateTime = 1 / 30;
+            const int jointsPerBatch = 8;
+            const float jointBatchUpdateFramesPerSecond = 30;
+            const float jointBatchUpdateTime = 1 / jointBatchUpdateFramesPerSecond;
 
             int jointIterationStartIndex = 0;
             int jointIterationEndIndex = jointsPerBatch - 1;
             float jointBatchTimer = 0;
-
-            isLocalPlayerUpdatingHands = true;
 
             while(enabled)
             {
@@ -231,28 +250,13 @@ namespace PixelsHub.Netrooms
                     }
                 }
 
-                UpdateHandParameters p = new()
-                {
-                    hand = handSubsystem.leftHand,
-                    isHandTracked = isLeftHandTracked,
-                    handWrist = leftHandWrist,
-                    jointCache = lastLeftHandJointCache,
-                    jointIterationStartIndex = jointIterationStartIndex,
-                    jointIterationEndIndex = jointIterationEndIndex,
-                    replicationAction = ReplicateAvatarLeftHandJointRpc
-                };
+                UpdateHandParameters p = new(jointIterationStartIndex, jointIterationEndIndex);
 
-                ReplicateLocalAvatarHand(p);
-
+                SetHandParametersForLeftHand(ref p);
+                SendLocalAvatarHandDataToOtherClients(p);
                 yield return null;
-
-                p.hand = handSubsystem.rightHand;
-                p.isHandTracked = isRightHandTracked;
-                p.handWrist = rightHandWrist;
-                p.jointCache = lastRightHandJointCache;
-                p.replicationAction = ReplicateAvatarRightHandJointRpc;
-
-                ReplicateLocalAvatarHand(p);
+                SetHandParametersForRightHand(ref p);
+                SendLocalAvatarHandDataToOtherClients(p);
 
                 jointBatchTimer += Time.unscaledDeltaTime;
 
@@ -280,7 +284,25 @@ namespace PixelsHub.Netrooms
             isLocalPlayerUpdatingHands = false;
         }
 
-        private void ReplicateLocalAvatarHand(UpdateHandParameters p) 
+        private void SetHandParametersForLeftHand(ref UpdateHandParameters p)
+        {
+            p.hand = handSubsystem.leftHand;
+            p.isHandTracked = isLeftHandTracked;
+            p.handWrist = leftHandWrist;
+            p.jointCache = lastLeftHandJointCache;
+            p.jointReplicationAction = ReplicateAvatarLeftHandJointRpc;
+        }
+
+        private void SetHandParametersForRightHand(ref UpdateHandParameters p)
+        {
+            p.hand = handSubsystem.rightHand;
+            p.isHandTracked = isRightHandTracked;
+            p.handWrist = rightHandWrist;
+            p.jointCache = lastRightHandJointCache;
+            p.jointReplicationAction = ReplicateAvatarRightHandJointRpc;
+        }
+
+        private void SendLocalAvatarHandDataToOtherClients(UpdateHandParameters p) 
         {
             var hand = p.hand;
             var wrist = p.handWrist;
@@ -313,7 +335,7 @@ namespace PixelsHub.Netrooms
                         if(Quaternion.Angle(p.jointCache[joint.jointId], targetRotation) > jointRotationAngleThreshold)
                         {
                             p.jointCache[joint.jointId] = targetRotation;
-                            p.replicationAction.Invoke(joint.jointId, targetRotation);
+                            p.jointReplicationAction.Invoke(joint.jointId, targetRotation);
                         }
                     }
                 }
@@ -326,7 +348,7 @@ namespace PixelsHub.Netrooms
                     p.isHandTracked.Value = false;
             }
         }
-#endif
+#endif // UNITY_EDITOR || IMMERSIVE_XR_BUILD
 
         private void OnValidate()
         {

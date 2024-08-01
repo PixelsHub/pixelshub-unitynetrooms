@@ -113,7 +113,7 @@ namespace PixelsHub.Netrooms
             }
         }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if(interactable == null)
                 TryGetComponent(out interactable);
@@ -145,13 +145,21 @@ namespace PixelsHub.Netrooms
             }
 
             ServerStartSelectRpc(NetworkPlayer.Local.OwnerClientId);
+            StartLocalPlayerSelect();
         }
+
+        protected virtual void StartLocalPlayerSelect() { }
 
         private void HandleSelectExited(SelectExitEventArgs args)
         {
             if(IsSelectedByLocalPlayer)
+            {
                 ServerEndSelectRpc();
+                EndLocalPlayerSelect();
+            }
         }
+
+        protected virtual void EndLocalPlayerSelect() { }
 
         private void HandleHoverEntered(HoverEnterEventArgs args)
         {

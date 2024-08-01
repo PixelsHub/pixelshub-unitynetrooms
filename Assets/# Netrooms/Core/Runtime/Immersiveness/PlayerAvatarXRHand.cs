@@ -16,10 +16,10 @@ namespace PixelsHub.Netrooms
             public Quaternion endRotation;
             public float interpolationTimer = jointInterpolationTime;
 
-            public void SetRotation(Quaternion rotation) 
+            public void SetLocalRotation(Quaternion localRotation) // Joints MUST be local
             {
                 startRotation = transform.localRotation;
-                endRotation = rotation;
+                endRotation = localRotation;
                 interpolationTimer = 0;
             }
         }
@@ -56,6 +56,9 @@ namespace PixelsHub.Netrooms
         private static readonly int finger3ColorProperty = Shader.PropertyToID("_FingerColor_3");
         private static readonly int finger4ColorProperty = Shader.PropertyToID("_FingerColor_4");
         private static readonly int handScaleProperty = Shader.PropertyToID("_ObjectScale");
+
+        [SerializeField]
+        private Transform avatarHead;
 
         [SerializeField]
         private GameObject rootObject;
@@ -105,34 +108,40 @@ namespace PixelsHub.Netrooms
             TargetMaterial.SetVector(handScaleProperty, scale);
         }
 
-        public void SetWristPose(Vector3 position, Quaternion rotation, bool interpolate = true)
+        /// <summary>
+        /// Set the transformation values for the wrist. Wrists act as the root of the entire hand.
+        /// </summary>
+        public void SetWristPose(Vector3 relativePosition, Quaternion relativeRotation, bool interpolate = true)
         {
+            Vector3 position = avatarHead.TransformPoint(relativePosition);
+            Quaternion rotation = avatarHead.rotation * relativeRotation;
+
             if(IsWristPoseBelowThreshold(position, rotation))
                 return;
 
+            endWristPosition = position;
+            endWristRotation = rotation;
+
             if(interpolate)
             {
-                startWristPosition = wrist.localPosition;
-                startWristRotation = wrist.localRotation;
-                endWristPosition = position;
-                endWristRotation = rotation;
-
+                startWristPosition = wrist.position;
+                startWristRotation = wrist.rotation;
                 wristInterpolationTimer = 0;
             }
             else
             {
                 wristInterpolationTimer = wristInterpolationTime;
-                wrist.SetLocalPositionAndRotation(position, rotation);
+                wrist.SetPositionAndRotation(position, rotation);
             }
         }
 
-        public void ApplyJoint(XRHandJointID id, Quaternion rotation) 
+        public void SetJointLocalRotation(XRHandJointID id, Quaternion localRotation) 
         {
             for(int i = 0; i < joints.Length; i++)
             {
                 if(joints[i].jointId == id)
                 {
-                    joints[i].SetRotation(rotation);
+                    joints[i].SetLocalRotation(localRotation);
                     return;
                 }
             }
@@ -156,7 +165,7 @@ namespace PixelsHub.Netrooms
         private bool IsWristPoseBelowThreshold(Vector3 position, Quaternion rotation) 
         {
             return Vector3.Distance(position, wrist.position) < 0.002f 
-                && Quaternion.Angle(rotation, wrist.rotation) < 0.5f;
+                && Quaternion.Angle(rotation, wrist.rotation) < 0.15f;
         }
 
         private void UpdateWristInterpolation() 
@@ -167,7 +176,7 @@ namespace PixelsHub.Netrooms
 
                 float t = wristInterpolationTimer / wristInterpolationTime;
 
-                wrist.SetLocalPositionAndRotation
+                wrist.SetPositionAndRotation
                 (
                     Vector3.Lerp(startWristPosition, endWristPosition, t),
                     Quaternion.Slerp(startWristRotation, endWristRotation, t)

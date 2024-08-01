@@ -522,9 +522,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visualizationRoots:
   - {fileID: 4517808141636776932}
-  colorTargets:
-  - renderer: {fileID: 2716381829187703345}
-    materialIndex: 0
   headRoot: {fileID: 299496653758760327}
   avatarHandLeft: {fileID: 5324756971660577596}
   avatarHandRight: {fileID: 8917612890856282659}
@@ -740,6 +737,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a079573d2d541f64ea373e27d963d390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  avatarHead: {fileID: 4904734328151863128}
   rootObject: {fileID: 3191699720105303796}
   wrist: {fileID: 2699416237025269406}
   joints:
@@ -1709,6 +1707,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a079573d2d541f64ea373e27d963d390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  avatarHead: {fileID: 4904734328151863128}
   rootObject: {fileID: 6524635855630907956}
   wrist: {fileID: 1375503503003834979}
   joints:
@@ -2392,11 +2391,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaf693bd7e6fb9e4d99d5729358e5f69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!23 &2716381829187703345 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 7992781315635647487, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
-  m_PrefabInstance: {fileID: 5430943831754834382}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4517808141636776932 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8497426298505277994, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
