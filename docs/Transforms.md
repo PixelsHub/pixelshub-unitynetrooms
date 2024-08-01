@@ -17,14 +17,6 @@ A scene **must** contain an object with the network singleton `NetworkWorldOrigi
 
 \
 For any transforms that might require custom synchronization, remember to use the origin transform reference for relative transformations, while taking into account if they may be or not children of the origin.\
-The Immersive Avatar hands provide an example:
-```C#
-var origin = NetworkWorldOrigin.Transform;
-
-var value = wrist.Value;
-value.wristPosition = origin.InverseTransformPoint(localHand.WristPosition);
-value.wristRotation = Quaternion.Inverse(origin.rotation) * localHand.WristRotation;
-```
 
 > [!NOTE]
 > Scale synchronization is supported and expected, since some users might, for example, want to look at a real sized scene as a miniature.
