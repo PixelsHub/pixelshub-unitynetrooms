@@ -1,6 +1,6 @@
 [Return to main page](../)
 
-# Transformations Basics
+# Transforms
 Most transformation synchronization is expected through built-in Unity Netcode components `NetworkTransform` and derived classes, with a core requirement based around an origin transform that will act as the root reference for any other transform-synchronized object.
 
 > [!NOTE]

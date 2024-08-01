@@ -26,6 +26,8 @@ namespace PixelsHub.Netrooms
         public static event Action<NetworkInteractable> OnInteractableCreated;
         public static event Action<NetworkInteractable> OnInteractableDestroyed;
 
+        public static event Action<bool> OnLocalPlayerAllowedToSelectChanged;
+
         public event Action OnDestroyed;
 
         public event Action<NetworkPlayer> OnSelectStarted;
@@ -33,11 +35,9 @@ namespace PixelsHub.Netrooms
         public event Action<NetworkPlayer> OnHoverStarted;
         public event Action<NetworkPlayer> OnHoverEnded;
 
-        public event Action<bool> OnLocalPlayerAllowedToSelectChanged;
-
         public static IReadOnlyList<NetworkInteractable> Interactables => interactables;
 
-        public bool IsLocalPlayerAllowedToSelect
+        public static bool IsLocalPlayerAllowedToSelect
         {
             get => isLocalPlayerAllowedToSelect;
             set
@@ -64,8 +64,7 @@ namespace PixelsHub.Netrooms
 
         private static readonly List<NetworkInteractable> interactables = new();
 
-        [SerializeField]
-        private bool isLocalPlayerAllowedToSelect = true;
+        private static bool isLocalPlayerAllowedToSelect = true;
 
         protected readonly NetworkVariable<NetworkSelect> selection = new();
         protected readonly NetworkList<ulong> hovers = new();

@@ -44,7 +44,7 @@ namespace PixelsHub.Netrooms
                 targetRotation = transform.localRotation;
                 targetScale = transform.localScale;
 
-                NetworkManager.Singleton.OnClientConnectedCallback += InitializeConnectedClient;
+                NetworkManager.Singleton.OnClientConnectedCallback += InitializeTransformOnConnectedClient;
             }
         }
 
@@ -54,8 +54,14 @@ namespace PixelsHub.Netrooms
 
             if(IsServer)
             {
-                NetworkManager.Singleton.OnClientConnectedCallback -= InitializeConnectedClient;
+                NetworkManager.Singleton.OnClientConnectedCallback -= InitializeTransformOnConnectedClient;
             }
+        }
+
+        private void InitializeTransformOnConnectedClient(ulong client)
+        {
+            RpcParams p = RpcTarget.Single(client, RpcTargetUse.Temp);
+            InitializeTransformOnClientRpc(targetPosition, targetRotation, targetScale, p);
         }
 
         private void LateUpdate()
@@ -69,14 +75,8 @@ namespace PixelsHub.Netrooms
                 SetTargetTransformations();
         }
 
-        private void InitializeConnectedClient(ulong client)
-        {
-            RpcParams p = RpcTarget.Single(client, RpcTargetUse.Temp);
-            InitializeTransformRpc(targetPosition, targetRotation, targetScale, p);
-        }
-
         [Rpc(SendTo.SpecifiedInParams)]
-        private void InitializeTransformRpc(Vector3 position, Quaternion rotation, Vector3 scale, RpcParams _)
+        private void InitializeTransformOnClientRpc(Vector3 position, Quaternion rotation, Vector3 scale, RpcParams _)
         {
             targetPosition = position;
             targetRotation = rotation;
