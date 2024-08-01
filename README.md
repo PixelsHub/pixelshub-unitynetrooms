@@ -4,7 +4,7 @@ Current implementation uses **Unity Netcode for GameObjects**.
 
 ## Documentation
 [Immersiveness (XR)](docs/Immersiveness.md)\
-[Transforms](docs/Transformations.md)\
+[Transforms](docs/Transforms.md)\
 [Interactions](docs/Interactions.md)\
 [User Experience](docs/UX.md)
 ### Player
