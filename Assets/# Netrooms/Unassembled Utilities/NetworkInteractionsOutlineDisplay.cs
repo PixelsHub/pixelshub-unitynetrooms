@@ -23,7 +23,7 @@ namespace PixelsHub.Netrooms
 
         private class OutlineSystem : System
         {
-            private BaseMeshOutline outline;
+            private IMeshOutlineIndividual outline;
 
             private int localSelectCount;
 
@@ -37,7 +37,9 @@ namespace PixelsHub.Netrooms
             {
                 if(!interactable.TryGetComponent(out outline))
                 {
-                    outline = interactable.gameObject.AddComponent<MeshOutlineHierarchy>();
+                    var outline = interactable.gameObject.AddComponent<MeshOutlineHierarchyIndividual>();
+                    outline.enabled = false;
+
                     outline.OutlineMaterial = owner.outlineMaterial;
 
                     if(owner.outlineStencilMaterial != null)
@@ -45,9 +47,11 @@ namespace PixelsHub.Netrooms
                         outline.StencilWriteMaterial = owner.outlineStencilMaterial;
                         outline.UseStencilOutline = true;
                     }
-                }
 
-                outline.enabled = false;
+                    this.outline = outline;
+                }
+                else
+                    outline.enabled = false;
             }
 
             protected override void StartListeningToInteractable(NetworkInteractable interactable)
@@ -78,7 +82,11 @@ namespace PixelsHub.Netrooms
                     return;
 
                 outline.enabled = true;
-                outline.OutlineMaterial.color = owner.localGrabColor;
+
+                if(owner.useRemoteLocalPlayerColor && NetworkPlayer.Local != null)
+                    outline.SetOutlineIndividualColor(NetworkPlayer.Local.Color);
+                else
+                    outline.SetOutlineIndividualColor(owner.localGrabColor);
             }
 
             private void HandleLocalSelectExited(SelectExitEventArgs args)
@@ -99,12 +107,11 @@ namespace PixelsHub.Netrooms
                 if(player == null)
                     return;
 
-                outline.enabled = true;
+                if(player.IsLocalPlayer) // Local player must have been set beforehand during local selection
+                    return;
 
-                if(owner.useRemoteLocalPlayerColor || !player.IsLocalPlayer)
-                    outline.OutlineMaterial.color = player.Color;
-                else
-                    outline.OutlineMaterial.color = owner.localGrabColor;
+                outline.enabled = true;
+                outline.SetOutlineIndividualColor(player.Color);
             }
 
             private void HandleNetworkSelectEnded(NetworkPlayer player)
@@ -112,9 +119,7 @@ namespace PixelsHub.Netrooms
                 remoteSelectCount--;
                 Debug.Assert(remoteSelectCount >= 0);
 
-                if(IsLocalPlayerSelecting)
-                    outline.OutlineMaterial.color = owner.localGrabColor;
-                else
+                if(!player.IsLocalPlayer || !IsLocalPlayerSelecting)
                     outline.enabled = false;
             }
 

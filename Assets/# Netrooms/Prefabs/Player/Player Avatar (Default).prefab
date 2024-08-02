@@ -134,6 +134,10 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 80
       objectReference: {fileID: 0}
+    - target: {fileID: 5487719355428512118, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
+      propertyPath: avatar
+      value: 
+      objectReference: {fileID: 8260935742337873876}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

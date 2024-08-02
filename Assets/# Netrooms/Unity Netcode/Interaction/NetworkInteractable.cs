@@ -86,10 +86,13 @@ namespace PixelsHub.Netrooms
 
         public override void OnNetworkDespawn()
         {
-            interactable.selectEntered.RemoveListener(HandleSelectEntered);
-            interactable.selectExited.RemoveListener(HandleSelectExited);
-            interactable.hoverEntered.RemoveListener(HandleHoverEntered);
-            interactable.hoverExited.RemoveListener(HandleHoverExited);
+            if(interactable != null)
+            {
+                interactable.selectEntered.RemoveListener(HandleSelectEntered);
+                interactable.selectExited.RemoveListener(HandleSelectExited);
+                interactable.hoverEntered.RemoveListener(HandleHoverEntered);
+                interactable.hoverExited.RemoveListener(HandleHoverExited);
+            }
 
             OnSelectStarted = null;
             OnSelectEnded = null;

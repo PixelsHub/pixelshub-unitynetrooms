@@ -178,6 +178,7 @@ namespace PixelsHub.Netrooms
                     if(NetworkPlayerSlots.Instance.TryAssignPlayerSlot(this, out int index))
                     {
                         colorIndex.Value = FindAvailableColorIndex(index);
+                        OnColorChanged?.Invoke(Color);
 
                         validated.Value = true;
 

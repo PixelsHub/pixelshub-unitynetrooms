@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "4ee27f72cc46430f2d8b2951200a64e7f39721e9"
+      "hash": "05e9dca70e7a76e236363114dcc64ddf188cafaa"
     },
     "com.pixelshub.unitybasics": {
       "version": "https://github.com/PixelsHub/pixelshub-coreunitypackages.git#unitybasics",

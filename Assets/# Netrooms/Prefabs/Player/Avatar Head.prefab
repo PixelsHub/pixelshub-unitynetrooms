@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1103253546863652502}
   - component: {fileID: 5725922569331999817}
-  - component: {fileID: 383097314859447595}
   m_Layer: 0
   m_Name: Avatar Head
   m_TagString: Untagged
@@ -66,22 +65,6 @@ MonoBehaviour:
   InLocalSpace: 1
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &383097314859447595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1180376034173177196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7d55c9af16e3d2438a03a4798b52d91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  materialTargets:
-  - renderer: {fileID: 7992781315635647487}
-    materialIndex: 0
-    property: _Color
 --- !u!1 &3069831061154479184
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,10 +517,13 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1967724693145946743}
+      addedObject: {fileID: 5487719355428512118}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4083692425605891188}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2712922326650730283}
   m_SourcePrefab: {fileID: 100100000, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
 --- !u!23 &7992781315635647487 stripped
 MeshRenderer:
@@ -549,7 +535,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
   m_PrefabInstance: {fileID: 8731782465220579195}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1967724693145946743
+--- !u!114 &5487719355428512118
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -558,16 +544,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8497426298505277994}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90adb44e17279dc4db8f0fc595f1f52f, type: 3}
+  m_Script: {fileID: 11500000, guid: 28d4eb2bdb0e8c64993cef20d672bc54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineMaterial: {fileID: 2100000, guid: 7f5e157bed58e9c4ca578fe73a9f6e39, type: 2}
-  outlineWidth: 0.015
-  autoAssignRenderQueue: 1
-  useStencilOutline: 1
-  stencilWriteMaterial: {fileID: 2100000, guid: 4ad8f3d9ed9af3445992ff858751079e, type: 2}
-  outlineOffset: 0
-  stencilReference: 1
+  avatar: {fileID: 0}
+  materialTargets:
+  - renderer: {fileID: 7992781315635647487}
+    materialIndex: 0
+    property: _MainColor
+    colorAlpha: 1
 --- !u!114 &4083692425605891188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -581,7 +566,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   avatar: {fileID: 0}
-  outline: {fileID: 1967724693145946743}
+  outline: {fileID: 2712922326650730283}
+--- !u!114 &2712922326650730283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8497426298505277994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbd0a283f6f56f46b5f6460297de606, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 7f5e157bed58e9c4ca578fe73a9f6e39, type: 2}
+  outlineWidth: 0.01
+  autoAssignRenderQueue: 1
+  useStencilOutline: 1
+  stencilWriteMaterial: {fileID: 2100000, guid: 4ad8f3d9ed9af3445992ff858751079e, type: 2}
+  outlineOffset: 0
+  stencilReference: 1
 --- !u!4 &9126329822980106384 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}

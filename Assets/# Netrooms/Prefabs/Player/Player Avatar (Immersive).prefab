@@ -2524,8 +2524,8 @@ GameObject:
   - component: {fileID: 8355106720388508381}
   - component: {fileID: 6712547318210755268}
   - component: {fileID: 1491240994426930955}
-  - component: {fileID: 8042354631500132678}
   - component: {fileID: 5467832754206888876}
+  - component: {fileID: 3868474255302275212}
   m_Layer: 0
   m_Name: Controller_Base
   m_TagString: Untagged
@@ -2601,25 +2601,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8042354631500132678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5478511894417989812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90adb44e17279dc4db8f0fc595f1f52f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMaterial: {fileID: 2100000, guid: 7f5e157bed58e9c4ca578fe73a9f6e39, type: 2}
-  outlineWidth: 0.015
-  autoAssignRenderQueue: 1
-  useStencilOutline: 1
-  stencilWriteMaterial: {fileID: 2100000, guid: 4ad8f3d9ed9af3445992ff858751079e, type: 2}
-  outlineOffset: 0
-  stencilReference: 1
 --- !u!114 &5467832754206888876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2633,7 +2614,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   avatar: {fileID: 398017777469426998}
-  outline: {fileID: 8042354631500132678}
+  outline: {fileID: 3868474255302275212}
+--- !u!114 &3868474255302275212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5478511894417989812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbd0a283f6f56f46b5f6460297de606, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 7f5e157bed58e9c4ca578fe73a9f6e39, type: 2}
+  outlineWidth: 0.01
+  autoAssignRenderQueue: 1
+  useStencilOutline: 1
+  stencilWriteMaterial: {fileID: 2100000, guid: 4ad8f3d9ed9af3445992ff858751079e, type: 2}
+  outlineOffset: 0
+  stencilReference: 1
 --- !u!1 &5616019712482474248
 GameObject:
   m_ObjectHideFlags: 0
@@ -4109,8 +4109,8 @@ GameObject:
   - component: {fileID: 4747880323678358535}
   - component: {fileID: 8013967026062482462}
   - component: {fileID: 2783617631474115025}
-  - component: {fileID: 5588312094062196942}
   - component: {fileID: 7792684443652687342}
+  - component: {fileID: 5512603434612908799}
   m_Layer: 0
   m_Name: Controller_Base
   m_TagString: Untagged
@@ -4186,25 +4186,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5588312094062196942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9085734341914347118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90adb44e17279dc4db8f0fc595f1f52f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMaterial: {fileID: 2100000, guid: 7f5e157bed58e9c4ca578fe73a9f6e39, type: 2}
-  outlineWidth: 0.015
-  autoAssignRenderQueue: 1
-  useStencilOutline: 1
-  stencilWriteMaterial: {fileID: 2100000, guid: 4ad8f3d9ed9af3445992ff858751079e, type: 2}
-  outlineOffset: 0
-  stencilReference: 1
 --- !u!114 &7792684443652687342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4218,7 +4199,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   avatar: {fileID: 398017777469426998}
-  outline: {fileID: 5588312094062196942}
+  outline: {fileID: 5512603434612908799}
+--- !u!114 &5512603434612908799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9085734341914347118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbd0a283f6f56f46b5f6460297de606, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 7f5e157bed58e9c4ca578fe73a9f6e39, type: 2}
+  outlineWidth: 0.01
+  autoAssignRenderQueue: 1
+  useStencilOutline: 1
+  stencilWriteMaterial: {fileID: 2100000, guid: 4ad8f3d9ed9af3445992ff858751079e, type: 2}
+  outlineOffset: 0
+  stencilReference: 1
 --- !u!1 &9153213730433594725
 GameObject:
   m_ObjectHideFlags: 0
@@ -4374,14 +4374,6 @@ PrefabInstance:
       propertyPath: outlines.Array.size
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 383097314859447595, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
-      propertyPath: 'outlines.Array.data[1]'
-      value: 
-      objectReference: {fileID: 5588312094062196942}
-    - target: {fileID: 383097314859447595, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
-      propertyPath: 'outlines.Array.data[2]'
-      value: 
-      objectReference: {fileID: 8042354631500132678}
     - target: {fileID: 1103253546863652502, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -4430,9 +4422,11 @@ PrefabInstance:
       propertyPath: avatar
       value: 
       objectReference: {fileID: 398017777469426998}
-    m_RemovedComponents:
-    - {fileID: 4083692425605891188, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
-    - {fileID: 1967724693145946743, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
+    - target: {fileID: 5487719355428512118, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
+      propertyPath: avatar
+      value: 
+      objectReference: {fileID: 398017777469426998}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1103253546863652502, guid: 364eabaff9dae774dbdff7597b2f29c7, type: 3}
