@@ -13,6 +13,8 @@ namespace PixelsHub.Netrooms
     [DisallowMultipleComponent]
     public class PlayerAvatar : NetworkBehaviour
     {
+        public event Action<Color> OnPlayerColorChanged;
+
         public NetworkPlayer Player { get; private set; }
 
         [SerializeField]
@@ -114,6 +116,8 @@ namespace PixelsHub.Netrooms
             if(colorTargets != null)
                 foreach(var colorTarget in colorTargets)
                     colorTarget.ApplyPlayerColor(color);
+
+            OnPlayerColorChanged?.Invoke(color);
         }
     }
 }

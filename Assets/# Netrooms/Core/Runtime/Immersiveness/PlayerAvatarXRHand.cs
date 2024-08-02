@@ -5,7 +5,7 @@ using UnityEngine.XR.Hands;
 
 namespace PixelsHub.Netrooms
 {
-    public class PlayerAvatarXRHand : MonoBehaviour
+    public class PlayerAvatarXRHand : PlayerAvatarXRController
     {
         [Serializable]
         public class AvatarJoint
@@ -46,7 +46,6 @@ namespace PixelsHub.Netrooms
             XRHandJointID.LittleIntermediate,
         };
 
-        private const float wristInterpolationTime = 0.12f;
         private const float jointInterpolationTime = 0.15f;
 
         private static readonly int handColorProperty = Shader.PropertyToID("_EdgeColor");
@@ -56,15 +55,6 @@ namespace PixelsHub.Netrooms
         private static readonly int finger3ColorProperty = Shader.PropertyToID("_FingerColor_3");
         private static readonly int finger4ColorProperty = Shader.PropertyToID("_FingerColor_4");
         private static readonly int handScaleProperty = Shader.PropertyToID("_ObjectScale");
-
-        [SerializeField]
-        private Transform avatarHead;
-
-        [SerializeField]
-        private GameObject rootObject;
-
-        [SerializeField]
-        private Transform wrist;
 
         [SerializeField]
         private AvatarJoint[] joints;
@@ -78,19 +68,21 @@ namespace PixelsHub.Netrooms
 
         private Material TargetMaterial => targetRenderer.materials[targetMaterialIndex];
 
-        private Vector3 startWristPosition;
-        private Vector3 endWristPosition;
-        private Quaternion startWristRotation;
-        private Quaternion endWristRotation;
-        private float wristInterpolationTimer;
-
-        public void SetHandActive(bool isVisible)
+        public void SetJointLocalRotation(XRHandJointID id, Quaternion localRotation)
         {
-            if(rootObject.activeSelf != isVisible)
-                rootObject.SetActive(isVisible);
+            for(int i = 0; i < joints.Length; i++)
+            {
+                if(joints[i].jointId == id)
+                {
+                    joints[i].SetLocalRotation(localRotation);
+                    return;
+                }
+            }
+
+            Debug.LogError($"Missing serialized joint for id \"{id}\".");
         }
 
-        public void SetColor(Color color)
+        public override void SetColor(Color color)
         {
             color.a = 0.85f;
             TargetMaterial.SetColor(handColorProperty, color);
@@ -108,47 +100,6 @@ namespace PixelsHub.Netrooms
             TargetMaterial.SetVector(handScaleProperty, scale);
         }
 
-        /// <summary>
-        /// Set the transformation values for the wrist. Wrists act as the root of the entire hand.
-        /// </summary>
-        public void SetWristPose(Vector3 relativePosition, Quaternion relativeRotation, bool interpolate = true)
-        {
-            Vector3 position = avatarHead.TransformPoint(relativePosition);
-            Quaternion rotation = avatarHead.rotation * relativeRotation;
-
-            if(IsWristPoseBelowThreshold(position, rotation))
-                return;
-
-            endWristPosition = position;
-            endWristRotation = rotation;
-
-            if(interpolate)
-            {
-                startWristPosition = wrist.position;
-                startWristRotation = wrist.rotation;
-                wristInterpolationTimer = 0;
-            }
-            else
-            {
-                wristInterpolationTimer = wristInterpolationTime;
-                wrist.SetPositionAndRotation(position, rotation);
-            }
-        }
-
-        public void SetJointLocalRotation(XRHandJointID id, Quaternion localRotation) 
-        {
-            for(int i = 0; i < joints.Length; i++)
-            {
-                if(joints[i].jointId == id)
-                {
-                    joints[i].SetLocalRotation(localRotation);
-                    return;
-                }
-            }
-
-            Debug.LogError($"Missing serialized joint for id \"{id}\".");
-        }
-
         private void Awake()
         {
             // Ensure correct initial rotations
@@ -156,32 +107,11 @@ namespace PixelsHub.Netrooms
                 joints[i].endRotation = joints[i].transform.localRotation;
         }
 
-        private void Update()
+        protected override void Update()
         {
-            UpdateWristInterpolation();
+            base.Update();
+
             UpdateJointInterpolations();
-        }
-
-        private bool IsWristPoseBelowThreshold(Vector3 position, Quaternion rotation) 
-        {
-            return Vector3.Distance(position, wrist.position) < 0.002f 
-                && Quaternion.Angle(rotation, wrist.rotation) < 0.15f;
-        }
-
-        private void UpdateWristInterpolation() 
-        {
-            if(wristInterpolationTimer <= wristInterpolationTime)
-            {
-                wristInterpolationTimer += Time.unscaledDeltaTime;
-
-                float t = wristInterpolationTimer / wristInterpolationTime;
-
-                wrist.SetPositionAndRotation
-                (
-                    Vector3.Lerp(startWristPosition, endWristPosition, t),
-                    Quaternion.Slerp(startWristRotation, endWristRotation, t)
-                );
-            }
         }
 
         private void UpdateJointInterpolations() 

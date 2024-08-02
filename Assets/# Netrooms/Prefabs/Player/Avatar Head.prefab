@@ -78,7 +78,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d55c9af16e3d2438a03a4798b52d91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outline: {fileID: 1967724693145946743}
   materialTargets:
   - renderer: {fileID: 7992781315635647487}
     materialIndex: 0
@@ -392,7 +391,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.28}
+  m_AnchoredPosition: {x: 0, y: 0.25}
   m_SizeDelta: {x: 600, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4139626441037490763
@@ -463,15 +462,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       propertyPath: m_LocalScale.x
-      value: 50
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       propertyPath: m_LocalScale.y
-      value: 50
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       propertyPath: m_LocalScale.z
-      value: 50
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -479,11 +478,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.365
+      value: -0.286
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.122
+      value: -0.137
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       propertyPath: m_LocalRotation.w
@@ -536,6 +535,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1967724693145946743}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4083692425605891188}
   m_SourcePrefab: {fileID: 100100000, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}
 --- !u!23 &7992781315635647487 stripped
 MeshRenderer:
@@ -566,6 +568,20 @@ MonoBehaviour:
   stencilWriteMaterial: {fileID: 2100000, guid: 4ad8f3d9ed9af3445992ff858751079e, type: 2}
   outlineOffset: 0
   stencilReference: 1
+--- !u!114 &4083692425605891188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8497426298505277994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cdb30e64e4036c448441808b3ce9631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  avatar: {fileID: 0}
+  outline: {fileID: 1967724693145946743}
 --- !u!4 &9126329822980106384 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7d8ae6d6d6ac3ca46b7e0efd4ac03cd2, type: 3}

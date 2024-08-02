@@ -1,5 +1,4 @@
 using System;
-using Microsoft.MixedReality.GraphicsTools;
 using UnityEngine;
 
 namespace PixelsHub.Netrooms
@@ -15,15 +14,10 @@ namespace PixelsHub.Netrooms
         }
 
         [SerializeField]
-        private MeshOutline outline;
-
-        [SerializeField]
         private MaterialTarget[] materialTargets;
 
         public void ApplyPlayerColor(Color color)
         {
-            outline.OutlineMaterial.color = color;
-
             foreach(var mt in materialTargets)
             {
                 if(mt.renderer.materials.Length > mt.materialIndex)
@@ -35,17 +29,5 @@ namespace PixelsHub.Netrooms
                     Debug.LogWarning($"Missing material at index {mt.materialIndex} on target renderer {mt.renderer}.");
             }
         }
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if(Application.isPlaying)
-                return;
-
-            if(outline == null)
-                if(!TryGetComponent(out outline))
-                    outline = GetComponentInChildren<MeshOutline>();
-        }
-#endif
     }
 }
