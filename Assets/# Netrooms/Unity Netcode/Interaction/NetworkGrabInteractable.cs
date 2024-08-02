@@ -1,10 +1,15 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Unity.Netcode;
 
 namespace PixelsHub.Netrooms
 {
+    /// <summary>
+    /// Synchronizes a XRGrabInteractable across all connected clients.
+    /// <para>
+    /// IMPORTANT: Remember to take into account the relative transformation towards world origin.
+    /// </para>
+    /// </summary>
     [RequireComponent(typeof(XRGrabInteractable))]
     public class NetworkGrabInteractable : NetworkInteractable
     {
@@ -34,7 +39,87 @@ namespace PixelsHub.Netrooms
         private float rotationTimer = -1;
         private float scaleTimer = -1;
 
+        // Flag to ensure correctness in world origin lock/unlock requests
         private bool isWorldOriginLocked;
+
+        /// <summary>
+        /// Sets the target transformation of the interactable on self and all clients, if not selected by any user.
+        /// Always local to world origin.
+        /// </summary>
+        public bool TrySetLocalTransformation(Transformation transformation, bool interpolate = false)
+        {
+            if(IsSelected)
+                return false;
+
+            originPosition = transform.localPosition;
+            targetPosition = transformation.position;
+
+            originRotation = transform.localRotation;
+            targetRotation = transformation.rotation;
+
+            originScale = transform.localScale;
+            targetScale = transformation.scale;
+
+            float timer = interpolate ? interpolationTime : 0;
+
+            positionTimer = timer;
+            rotationTimer = timer;
+            scaleTimer = timer;
+
+            ReplicateTransformationRpc(transformation.position, transformation.rotation, transformation.scale);
+            return true;
+        }
+
+        /// <summary>
+        /// Sets the target position of the interactable on self and all clients, if not selected by any user.
+        /// Always local to world origin.
+        /// </summary>
+        public bool TrySetLocalPosition(Vector3 position, bool interpolate = false)
+        {
+            if(IsSelected)
+                return false;
+
+            originPosition = transform.localPosition;
+            targetPosition = position;
+            positionTimer = interpolate ? interpolationTime : 0;
+
+            ReplicatePositionRpc(position);
+            return true;
+        }
+
+        /// <summary>
+        /// Sets the target rotation of the interactable on self and all clients, if not selected by any user.
+        /// Always local to world origin.
+        /// </summary>
+        public bool TrySetLocalRotation(Quaternion rotation, bool interpolate = false)
+        {
+            if(IsSelected)
+                return false;
+
+            originRotation = transform.localRotation;
+            targetRotation = rotation;
+            rotationTimer = interpolate ? interpolationTime : 0;
+
+            ReplicateRotationRpc(rotation);
+            return true;
+        }
+
+        /// <summary>
+        /// Sets the target scale of the interactable on self and all clients, if not selected by any user.
+        /// Always local to world origin.
+        /// </summary>
+        public bool TrySetLocalScale(Vector3 scale, bool interpolate = false)
+        {
+            if(IsSelected)
+                return false;
+
+            originScale = transform.localScale;
+            targetScale = scale;
+            scaleTimer = interpolate ? interpolationTime : 0;
+
+            ReplicateScaleRpc(scale);
+            return true;
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -114,6 +199,8 @@ namespace PixelsHub.Netrooms
                 isWorldOriginLocked = false;
                 NetworkWorldOrigin.RemoveLockTransformationRequest(this);
             }
+
+            Debug.Assert(transform.parent == NetworkWorldOrigin.Transform);
         }
 
         [Rpc(SendTo.SpecifiedInParams)]
@@ -125,6 +212,22 @@ namespace PixelsHub.Netrooms
 
             transform.SetLocalPositionAndRotation(targetPosition, targetRotation);
             transform.localScale = targetScale;
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void ReplicateTransformationRpc(Vector3 position, Quaternion rotation, Vector3 scale)
+        {
+            originPosition = transform.localPosition;
+            targetPosition = position;
+            positionTimer = interpolationTime;
+
+            originRotation = transform.localRotation;
+            targetRotation = rotation;
+            rotationTimer = interpolationTime;
+
+            originScale = transform.localScale;
+            targetScale = scale;
+            scaleTimer = interpolationTime;
         }
 
         [Rpc(SendTo.NotMe)]
