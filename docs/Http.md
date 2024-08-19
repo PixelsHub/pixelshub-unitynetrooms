@@ -1,10 +1,10 @@
 [Return to main page](../)
 
 # HTTP
-Built-in HTTP capabilities for both server and client requirements are provided.\
+Built-in HTTP capabilities for both server and client requirements are provided.
 
 ## HTTP Server
-An instance of `HttpServer` creates a simple HTTP listener that can bse used by implementations to define how to handle their own HTTP API.\
+An instance of `HttpServer` creates a simple HTTP listener that can be used by implementations to define how to handle their own HTTP API.\
 The following examples shows how to implement custom API handlers:
 ```C#
 httpServer.AddHandler(HttpMethod.Get.Method, "mypath", RequestHandler);
