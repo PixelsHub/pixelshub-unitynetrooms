@@ -3,7 +3,9 @@
     "rootNamespace": "PixelsHub.Netrooms",
     "references": [
         "PixelsHub.Netrooms",
+        "PixelsHub.Immersiveness",
         "Unity.TextMeshPro",
+        "Unity.XR.CoreUtils",
         "Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard"
     ],
     "includePlatforms": [],

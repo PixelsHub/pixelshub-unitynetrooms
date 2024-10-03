@@ -2,6 +2,7 @@ using UnityEngine;
 using PixelsHub.Netrooms;
 using UnityEngine.InputSystem;
 using UnityEditor;
+using PixelsHub.XR;
 
 public class NetroomsDemo : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class NetroomsDemo : MonoBehaviour
             distance = bounds.size.magnitude
         };
 
-        if(!XRImmersiveness.IsActive)
+        if(!Immersiveness.IsActive)
         {
             var playerController = FindFirstObjectByType<NonImmersivePlayerController>();
             if(playerController != null)

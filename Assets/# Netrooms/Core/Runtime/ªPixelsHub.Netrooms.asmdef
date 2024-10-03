@@ -3,13 +3,14 @@
     "rootNamespace": "PixelsHub.Netrooms",
     "references": [
         "PixelsHub.UnityBasics",
+        "PixelsHub.Immersiveness",
         "Unity.InputSystem",
+        "Unity.XR.CoreUtils",
         "Unity.XR.Management",
         "Unity.XR.Management.Editor",
         "Unity.XR.Interaction.Toolkit",
         "Unity.XR.Hands",
-        "Unity.XR.OpenXR",
-        "Unity.Multiplayer.Playmode"
+        "Unity.XR.OpenXR"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

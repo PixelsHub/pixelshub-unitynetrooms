@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PixelsHub.XR;
 
 namespace PixelsHub.Netrooms.UX
 {
@@ -26,7 +27,7 @@ namespace PixelsHub.Netrooms.UX
 
             if(updateCoroutine == null)
             {
-                updateCoroutine = XRImmersiveness.IsActive ? UpdateCoroutineImmersive() : UpdateCoroutineDefault();
+                updateCoroutine = Immersiveness.IsActive ? UpdateCoroutineImmersive() : UpdateCoroutineDefault();
                 StaticCoroutineRunner.Start(updateCoroutine);
             }
         }

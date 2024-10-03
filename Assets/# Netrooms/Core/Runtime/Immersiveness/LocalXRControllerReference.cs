@@ -34,5 +34,21 @@ namespace PixelsHub.Netrooms
                     return false;
             return true;
         }
+        
+#if UNITY_EDITOR
+        /// <summary>
+        /// Call only from editor code.
+        /// </summary>
+        public void EditorSetHandedness(InteractorHandedness handedness)
+        {
+            if(Application.isPlaying)
+            {
+                Debug.LogError("Cannot perform operation if application is playing.");
+                return;
+            }
+            
+            this.handedness = handedness;
+        }
+#endif
     }
 }

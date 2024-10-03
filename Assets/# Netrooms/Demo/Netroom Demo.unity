@@ -548,6 +548,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 2974156322
   InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
   ActiveSceneSynchronization: 0
@@ -555,6 +557,8 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!4 &714713975
 Transform:
   m_ObjectHideFlags: 0
@@ -582,6 +586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6553c0eeda5c484bb95350e6b963e62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   availableSlots: 12
 --- !u!114 &714713977
 MonoBehaviour:
@@ -595,6 +600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a33819835de1ad443a9a008f0ad8bbda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &714713978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -607,6 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6136ecc7a64409d48a87aaa6e2788361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &714713979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -619,6 +626,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8449c1a153a4da24e8031c2e9160f907, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   pool:
     prefab: {fileID: 8312264363501608862, guid: dda5b15a1b459414d9171bc6c562cd89, type: 3}
     owner: {fileID: 0}
@@ -1167,6 +1175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e024a1774e1c46f458f056bee2c3ea4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   positionThreshold: 0.001
   rotationThreshold: 0.01
   scaleThreshold: 0.01
@@ -1682,6 +1691,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e024a1774e1c46f458f056bee2c3ea4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   positionThreshold: 0.001
   rotationThreshold: 0.01
   scaleThreshold: 0.01
@@ -1812,6 +1822,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 593a2fe42fa9d37498c96f9a383b6521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NetworkManagerExpanded: 0
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1738657202}
@@ -1834,6 +1845,10 @@ MonoBehaviour:
     LoadSceneTimeOut: 120
     SpawnTimeout: 10
     EnableNetworkLogs: 1
+    NetworkTopology: 0
+    UseCMBService: 0
+    AutoSpawnPlayerPrefabClientSide: 1
+    NetworkProfilingMetrics: 1
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
@@ -2153,7 +2168,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2078197620}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae93b501537f8344694b798429dcd212, type: 3}
+  m_Script: {fileID: 11500000, guid: a9fc892dc4986534ca801537bad1a229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onImmersivenessActiveDetected:
@@ -2241,6 +2256,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 2667065338
   InScenePlacedSourceGlobalObjectIdHash: 3042072600
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
   ActiveSceneSynchronization: 0
@@ -2248,6 +2265,8 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &722579876396511002
 GameObject:
   m_ObjectHideFlags: 0
@@ -2824,6 +2843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b75a3889026d84e458b540726783fab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   testStartPosition: {x: 0, y: 0, z: 0}
   testRotation: {x: 0, y: 0, z: 0}
   testStartScale: 1

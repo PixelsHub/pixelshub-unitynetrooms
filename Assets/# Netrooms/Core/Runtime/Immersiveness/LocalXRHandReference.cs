@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Hands;
@@ -43,49 +42,65 @@ namespace PixelsHub.Netrooms
         }
 
 #if UNITY_EDITOR
-        [Header("Editor")]
-        [SerializeField]
-        private string jointHierarchyNamePrefix;
-
-        [SerializeField]
-        private bool fetchJointsFromHierarchy;
-
-        private void OnValidate()
+        /// <summary>
+        /// Call only from editor code.
+        /// </summary>
+        public void EditorSetHandedness(Handedness handedness)
         {
-            if(fetchJointsFromHierarchy)
+            if(Application.isPlaying)
             {
-                fetchJointsFromHierarchy = false;
+                Debug.LogError("Cannot perform operation if application is playing.");
+                return;
+            }
+            
+            this.handedness = handedness;
+        }
+        
+        /// <summary>
+        /// Call only from editor code.
+        /// </summary>
+        public void EditorSetHierarchy(Transform wrist, string jointHierarchyNamePrefix)
+        {
+            if(Application.isPlaying)
+            {
+                Debug.LogError("Cannot perform operation if application is playing.");
+                return;
+            }
+            
+            this.wrist = wrist;
+            
+            var targetJoints = PlayerAvatarXRHand.targetJoints;
 
-                var targetJoints = PlayerAvatarXRHand.targetJoints;
+            joints = new AvatarJoint[targetJoints.Length];
 
-                joints = new AvatarJoint[targetJoints.Length];
-
-                for(int i = 0; i < targetJoints.Length; i++)
+            for(int i = 0; i < targetJoints.Length; i++)
+            {
+                joints[i] = new()
                 {
-                    joints[i] = new()
-                    {
-                        jointId = targetJoints[i],
-                        transform = FindJointRecursive(transform, $"{jointHierarchyNamePrefix}{targetJoints[i]}")
-                    };
+                    jointId = targetJoints[i],
+                    transform = FindJointRecursive(transform, $"{jointHierarchyNamePrefix}{targetJoints[i]}")
+                };
+                
+                if(joints[i].transform == null)
+                    Debug.LogError($"Could not find transform for joint {joints[i].jointId}");
+            }
+
+            static Transform FindJointRecursive(Transform parent, string name)
+            {
+                for(int i = 0; i < parent.childCount; i++)
+                {
+                    var child = parent.GetChild(i);
+
+                    if(child.name == name)
+                        return child;
+
+                    var result = FindJointRecursive(child, name);
+
+                    if(result != null)
+                        return result;
                 }
 
-                static Transform FindJointRecursive(Transform parent, string name)
-                {
-                    for(int i = 0; i < parent.childCount; i++)
-                    {
-                        var child = parent.GetChild(i);
-
-                        if(child.name == name)
-                            return child;
-
-                        var result = FindJointRecursive(child, name);
-
-                        if(result != null)
-                            return result;
-                    }
-
-                    return null;
-                }
+                return null;
             }
         }
 #endif

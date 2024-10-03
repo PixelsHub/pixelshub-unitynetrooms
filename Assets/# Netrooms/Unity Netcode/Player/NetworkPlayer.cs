@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Netcode;
+using PixelsHub.XR;
 
 namespace PixelsHub.Netrooms
 {
@@ -261,7 +262,7 @@ namespace PixelsHub.Netrooms
 
         private PlayerDeviceCategory GetLocalPlayerDeviceCategory()
         {
-            if(XRImmersiveness.IsActive)
+            if(Immersiveness.IsActive)
                 return PlayerDeviceCategory.ImmersiveXR;
             else
             {

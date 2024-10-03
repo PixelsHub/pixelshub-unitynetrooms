@@ -1,5 +1,25 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9145563872583631527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7365b139f7aec43b23d26b7a48b5a6, type: 3}
+  m_Name: MetaQuestTouchPlusControllerProfile Standalone
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: Meta Quest Touch Plus Controller Profile
+  version: 0.0.1
+  featureIdInternal: com.unity.openxr.feature.input.metaquestplus
+  openxrExtensionStrings: XR_META_touch_controller_plus
+  company: Unity
+  priority: 0
+  required: 0
 --- !u!114 &-9078631814142885507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,10 +81,10 @@ MonoBehaviour:
   - {fileID: -7875354601289503339}
   - {fileID: -3235852019529208201}
   - {fileID: 7471573978727053649}
-  - {fileID: 4325598933640176762}
   - {fileID: -1309927838366985987}
   - {fileID: 8309089500269340099}
   - {fileID: 4711200958141109831}
+  - {fileID: 236449479867559536}
   - {fileID: -5850778010541042646}
   - {fileID: 7833977210693252507}
   - {fileID: -2786236362036458148}
@@ -73,7 +93,11 @@ MonoBehaviour:
   - {fileID: -8182112419730296891}
   - {fileID: 1000635054993110378}
   - {fileID: 4621488202566534014}
+  - {fileID: 4325598933640176762}
   m_renderMode: 1
+  m_autoColorSubmissionMode: 1
+  m_colorSubmissionModes:
+    m_List: 00000000
   m_depthSubmissionMode: 0
   m_optimizeBufferDiscards: 1
   m_symmetricProjection: 0
@@ -252,11 +276,11 @@ MonoBehaviour:
   - {fileID: 4512410565719125404}
   - {fileID: 4911669019970125582}
   - {fileID: 6013368447737983059}
-  - {fileID: -6771018196995304556}
   - {fileID: -5188981020498424919}
   - {fileID: 8796736094253152725}
   - {fileID: -6438719437155339957}
   - {fileID: -6926284761212962065}
+  - {fileID: -9145563872583631527}
   - {fileID: 8918936720796344101}
   - {fileID: -8360003572575832810}
   - {fileID: -3577738373590236970}
@@ -266,7 +290,11 @@ MonoBehaviour:
   - {fileID: 2711859005653088693}
   - {fileID: 8917022482619528458}
   - {fileID: -1184932955166681158}
+  - {fileID: -6771018196995304556}
   m_renderMode: 1
+  m_autoColorSubmissionMode: 1
+  m_colorSubmissionModes:
+    m_List: 00000000
   m_depthSubmissionMode: 0
   m_optimizeBufferDiscards: 0
   m_symmetricProjection: 0
@@ -544,10 +572,10 @@ MonoBehaviour:
   - {fileID: -6884760349901846391}
   - {fileID: 9180921882634544904}
   - {fileID: 7773842710354951225}
-  - {fileID: -3659424872184301166}
   - {fileID: -905734531926003195}
   - {fileID: -1124536063594357008}
   - {fileID: -4844197414362196426}
+  - {fileID: 8338805466667028272}
   - {fileID: -2156497657964167524}
   - {fileID: -7064706442683276628}
   - {fileID: 2322978952980591076}
@@ -556,7 +584,11 @@ MonoBehaviour:
   - {fileID: -8662919229455596802}
   - {fileID: 7960316883479447319}
   - {fileID: 6539140226934966911}
+  - {fileID: -3659424872184301166}
   m_renderMode: 1
+  m_autoColorSubmissionMode: 1
+  m_colorSubmissionModes:
+    m_List: 00000000
   m_depthSubmissionMode: 0
   m_optimizeBufferDiscards: 0
   m_symmetricProjection: 0
@@ -721,6 +753,26 @@ MonoBehaviour:
   - {fileID: 645455075998982702}
   - {fileID: -8386853207582079919}
   - {fileID: -1348923418161663124}
+--- !u!114 &236449479867559536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7365b139f7aec43b23d26b7a48b5a6, type: 3}
+  m_Name: MetaQuestTouchPlusControllerProfile Android
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: Meta Quest Touch Plus Controller Profile
+  version: 0.0.1
+  featureIdInternal: com.unity.openxr.feature.input.metaquestplus
+  openxrExtensionStrings: XR_META_touch_controller_plus
+  company: Unity
+  priority: 0
+  required: 0
 --- !u!114 &310340420695788985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -756,6 +808,9 @@ MonoBehaviour:
   features:
   - {fileID: 1177372680819908380}
   m_renderMode: 1
+  m_autoColorSubmissionMode: 1
+  m_colorSubmissionModes:
+    m_List: 00000000
   m_depthSubmissionMode: 0
   m_optimizeBufferDiscards: 0
   m_symmetricProjection: 0
@@ -1276,6 +1331,26 @@ MonoBehaviour:
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.metahandtrackingaim
   openxrExtensionStrings: XR_FB_hand_tracking_aim
+  company: Unity
+  priority: 0
+  required: 0
+--- !u!114 &8338805466667028272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7365b139f7aec43b23d26b7a48b5a6, type: 3}
+  m_Name: MetaQuestTouchPlusControllerProfile Metro
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: Meta Quest Touch Plus Controller Profile
+  version: 0.0.1
+  featureIdInternal: com.unity.openxr.feature.input.metaquestplus
+  openxrExtensionStrings: XR_META_touch_controller_plus
   company: Unity
   priority: 0
   required: 0

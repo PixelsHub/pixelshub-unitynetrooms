@@ -1,4 +1,5 @@
 using UnityEngine;
+using PixelsHub.XR;
 
 namespace PixelsHub.Netrooms
 {
@@ -44,7 +45,7 @@ namespace PixelsHub.Netrooms
             }
 
 #if UNITY_EDITOR || IMMERSIVE_XR_BUILD
-            if (XRImmersiveness.IsActive)
+            if (Immersiveness.IsActive)
                 localObject = InternalInstantiate(immersiveLocalObjectPrefab);
             else
 #endif

@@ -24,7 +24,7 @@ namespace PixelsHub.Netrooms
             }
         }
 
-        public readonly static XRHandJointID[] targetJoints = new[]
+        public static readonly XRHandJointID[] targetJoints = new[]
         {
             XRHandJointID.ThumbMetacarpal,
             XRHandJointID.ThumbProximal,

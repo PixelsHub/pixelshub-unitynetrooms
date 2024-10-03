@@ -3,6 +3,7 @@
     "rootNamespace": "PixelsHub.Netrooms.UX",
     "references": [
         "PixelsHub.UnityBasics",
+        "PixelsHub.Immersiveness",
         "PixelsHub.Netrooms",
         "PixelsHub.Netrooms.Unitynetcode",
         "Unity.Netcode.Runtime",
